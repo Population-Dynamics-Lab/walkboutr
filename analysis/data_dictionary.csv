@@ -1,0 +1,16 @@
+dataset,column,definition
+epoch,bout,A label for each walk bout. Each bout is sequentially numbered for easier identification. NA where the epoch is not part of a bout.
+epoch,bout_category,"The category of the bout, as defined below."
+epoch,activity_counts,Accelerometer counts in counts per epoch (CPE).
+epoch,time,"The epoch start time, as a date-time in the UTC time zone."
+epoch,non_wearing,Boolean flag for whether the device was not being worn at the time (non_wearing = TRUE).
+epoch,complete_day,"Boolean flag for whether the calendar day of data was complete, assessed by whether the device was worn for more than min_wearing_hours_per_day hours, which defaults to 8."
+epoch,latitude,"Latitude coordinate for the epoch, from the GPS data."
+epoch,longitude,"Longitude coordinate for the epoch, from the GPS data."
+epoch,speed,"Speed at this epoch in kilometres per hour, from the GPS data."
+bout,bout,A label for each walk bout. Each bout is sequentially numbered for easier identification.
+bout,median_speed,"The median speed of the bout, in kilometres per hour."
+bout,complete_day,"Boolean flag for whether the calendar day the bout falls on was complete, assessed by whether the device was worn for more than min_wearing_hours_per_day hours, which defaults to 8."
+bout,bout_start,"The time the bout started, as a date-time in the UTC time zone."
+bout,duration,"The length of the bout, in minutes."
+bout,bout_category,"The category of the bout, as defined below."

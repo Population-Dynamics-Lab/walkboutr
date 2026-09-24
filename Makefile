@@ -3,7 +3,7 @@
 IMAGE := walkboutr
 DOCKER_RUN := docker run --rm -v "$$PWD:/work" -w /work $(IMAGE)
 
-.PHONY: help docker-build docker-run smoke lint readme
+.PHONY: help docker-build docker-run smoke lint tables readme
 
 help:
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/'
@@ -19,6 +19,9 @@ smoke: ## Run the pipeline end to end on sample data, in the image
 
 lint: ## Lint R/ on the host
 	Rscript -e 'lintr::lint_dir("R")'
+
+tables: ## Regenerate the paper's data dictionary tables from pipeline output
+	Rscript analysis/make_tables.R
 
 readme: ## Regenerate README.md from README.Rmd (needs pandoc)
 	Rscript -e 'rmarkdown::render("README.Rmd")'
