@@ -118,10 +118,10 @@ that needs it.
 | `parameters.R` | all steps | `parameters` (overridable per call), `constants` (not overridable), and `collate_arguments()`, which merges caller overrides in. |
 | `validate_accelerometry_data.R` | step 1 | Rejects malformed accelerometry input before anything else runs. |
 | `validate_gps_data.R` | step 2 | The same for GPS input. |
-| `plot.R` | you, directly | The three article figures, one function each. |
+| `plot.R` | you, directly | Plotting functions for inspecting a bout. |
 | `simulate_gps_data.R` | examples, `smoke.R` | Generates GPS data for a walk in Seattle. |
 | `simulate_accelerometry_data.R` | examples, `smoke.R` | The `make_*` builders, each constructing a specific scenario (smallest bout, full day, non-wearing period). |
-| `simulate_example_bouts.R` | the figures | Data shaped like real data, for plotting. The `make_*` builders above produce square waves and `generate_gps_data()` wanders for miles, neither of which makes a readable figure. |
+| `simulate_example_bouts.R` | `plot.R` | Data shaped like real data. The `make_*` builders above produce square waves and `generate_gps_data()` wanders for miles, neither of which plots usefully. |
 
 ### Bout categories
 
