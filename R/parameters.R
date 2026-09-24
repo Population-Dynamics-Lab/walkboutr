@@ -52,13 +52,26 @@ constants <-
 #' @returns A list of all arguments, including both pre-defined parameters and constants and any user-provided arguments.
 collate_arguments <- function(..., collated_arguments = NULL){
   user_arguments <- list(...)
-  if (!is.null(collated_arguments) & length(user_arguments) > 0){
-    stop(paste0("Error: "))
+
+  if (!is.null(collated_arguments) && length(user_arguments) > 0){
+    stop("Cannot combine `collated_arguments` with individual arguments (",
+         toString(names(user_arguments)), "). Pass one or the other.")
   }
+
+  # Unnamed arguments used to be dropped without a word, so a call like
+  # process_accelerometry_counts_into_bouts(acc, collated_arguments$epoch_length)
+  # looked like it set the epoch length and silently did nothing.
+  if (length(user_arguments) > 0 &&
+      (is.null(names(user_arguments)) || any(names(user_arguments) == ""))){
+    stop("All arguments must be named. Accepted names are: ",
+         toString(names(parameters)), ".")
+  }
+
   arguments <- c(parameters, constants)
   for(n in names(user_arguments)){
     if(!(n %in% names(parameters))){
-      stop(paste("Error: unknown parameter ", n, ". Accepted parameter names are: ", toString(names(parameters)), sep = ", "))
+      stop("Unknown parameter `", n, "`. Accepted parameter names are: ",
+           toString(names(parameters)), ".")
     }
     arguments[n] <- user_arguments[n]
   }

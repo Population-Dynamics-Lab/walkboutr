@@ -58,7 +58,7 @@ validate_gps_data <- function(gps_data){
   }
 
 # Validate latitude/longitude variable
-  if(!(class(gps_data$latitude) %in% c("numeric"))){
+  if(!(class(gps_data$latitude) %in% c("integer", "numeric"))){
     stop(paste0("Error: latitude column is not class integer or numeric."))
   }
   if(any(is.na(gps_data$latitude))){

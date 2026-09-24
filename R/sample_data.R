@@ -12,13 +12,13 @@
 #' @export
 generate_gps_data <- function(start_lat, start_long, start_time, n_epochs = 110, time_interval = 30.0, seed = 1234) {
 
+  # set random number generator seed for reproducibility, before any draw
+  set.seed(seed)
+
   # set the initial location and speed
   current_lat <- start_lat
   current_long <- start_long
-  current_speed <- stats::runif(1.7, 0.5, 5)  # km/h
-
-  # set random number generator seed for reproducibility
-  set.seed(seed)
+  current_speed <- stats::runif(1, 0.5, 5)  # km/h
 
   # generate a series of locations and speeds
   directions <- stats::runif(n_epochs, 0, 2 * pi)
@@ -40,7 +40,7 @@ generate_gps_data <- function(start_lat, start_long, start_time, n_epochs = 110,
 
   for (i in seq_along(directions)) {
     df[i+1, c("latitude", "longitude")] <- next_lat_long(df[i, "latitude"], df[i, "longitude"], df[i, "speed"], directions[i], dts[i])
-    df$speed[i+1] <- stats::runif(1.7,.5,5)
+    df$speed[i+1] <- stats::runif(1, .5, 5)
   }
 
   return(df)
@@ -103,12 +103,12 @@ next_lat_long <- function(latitude, longitude, speed, direction, dt) {
 #'
 #' @return A data frame with columns `time`, `latitude`, `longitude`, `speed`
 #' @export
-generate_walking_in_seattle_gps_data <- function(start_lat, start_long, start_time){
+generate_walking_in_seattle_gps_data <- function(start_lat = 47.6062,
+                                                 start_long = -122.3321,
+                                                 start_time = '2012-04-07 00:00:30'){
   # Generating a sample dataset of walking in Seattle, WA, USA on April 7th, 2012
-  start_lat <- 47.6062
-  start_long <- 122.3321
-  start_time <- '2012-04-07 00:00:30'
   gps_data <- generate_gps_data(start_lat = start_lat, start_long = start_long, start_time = start_time)
+  return(gps_data)
 }
 
 

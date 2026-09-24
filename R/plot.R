@@ -21,8 +21,8 @@ generate_bout_plot <- function(accelerometry_counts,gps_data,bout_number, leadin
   b <- bout_number
   collated_arguments <- collate_arguments(..., collated_arguments=collated_arguments)
 
-  bouts <- process_accelerometry_counts_into_bouts(accelerometry_counts)
-  gps_epochs <- process_gps_data_into_gps_epochs(gps_data)
+  bouts <- process_accelerometry_counts_into_bouts(accelerometry_counts, collated_arguments=collated_arguments)
+  gps_epochs <- process_gps_data_into_gps_epochs(gps_data, collated_arguments=collated_arguments)
   walk_bouts <- bouts %>%
     dplyr::left_join(gps_epochs, by = "time") %>%
     dplyr::arrange(time) %>%
@@ -96,10 +96,10 @@ generate_bout_plot <- function(accelerometry_counts,gps_data,bout_number, leadin
     xmax <- end
     xmin <- start + (1 - gps_target_size)*(end - start)
     y_low <- 0
-    y_high <- max(walk_bouts$activity_counts)*1.2
+    y_high <- max(df$activity_counts)*1.2
     ymax <- y_high
     ymin <- (1 - gps_target_size) * y_high
-    plot <- ggplot2::ggplot(walk_bouts, ggplot2::aes(x = time, y = activity_counts)) +
+    plot <- ggplot2::ggplot(df, ggplot2::aes(x = time, y = activity_counts)) +
       ggplot2::geom_point() +
       ggplot2::geom_hline(yintercept=collated_arguments$active_counts_per_epoch_min, linetype="dashed", color = "darksalmon") +
       ggplot2::xlim(as.POSIXct(start), as.POSIXct(end)) +
@@ -112,7 +112,8 @@ generate_bout_plot <- function(accelerometry_counts,gps_data,bout_number, leadin
       ggplot2::theme_bw() +
       ggplot2::theme(legend.position = "none") +
       ggplot2::annotation_custom(ggplot2::ggplotGrob(circles), xmin = xmin, xmax = end, ymin = ymin, ymax = ymax)
+
+    return(plot)
   }
-  return(plot)
 
 }

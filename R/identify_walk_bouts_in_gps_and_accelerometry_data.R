@@ -42,7 +42,7 @@ summarize_walk_bouts <- function(walk_bouts, ..., collated_arguments = NULL){
     dplyr::group_by(bout) %>%
     dplyr::filter(!is.na(bout)) %>%
     dplyr::summarise(
-              median_speed = median(speed, na.rm=TRUE),
+              median_speed = stats::median(speed, na.rm=TRUE),
               complete_day = any(complete_day),
               bout_start = lubridate::as_datetime(
                 min(as.numeric(time)), tz = "UTC"),

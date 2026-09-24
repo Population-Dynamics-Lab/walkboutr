@@ -92,7 +92,7 @@ generate_bout_radius <- function(walk_bouts, dwellbout_radii_quantile){
     tidyr::drop_na(bout) %>%
     dplyr::select(bout) %>%
     unique() # drop rows with NA bout label
-  for(bout_label in bout_labels){
+  for(bout_label in bout_labels$bout){
   # pull long/lat and remove outliers
     lat_long <- walk_bouts %>%
       dplyr::filter(bout==bout_label) %>%
@@ -101,7 +101,7 @@ generate_bout_radius <- function(walk_bouts, dwellbout_radii_quantile){
     lat_long <- lat_long %>%
       dplyr::distinct(longitude, latitude, .keep_all = TRUE)
 
-    if(nrow(lat_long > 1)){
+    if(nrow(lat_long) > 1){
       # derive radius of bounding circle
       circle <- lat_long %>%
         dplyr::select(longitude, latitude) %>%
@@ -137,11 +137,12 @@ evaluate_gps_completeness <- function(walk_bouts, min_gps_obs_within_bout, min_g
     dplyr::summarise(
       n_valid_gps_records = sum(!is.na(speed) & !is.na(latitude) & !is.na(longitude)), # speed and GPS units
       gps_coverage_ratio = ifelse(sum(!is.na(bout))!=0, n_valid_gps_records/sum(!is.na(bout)), NA),
-      sufficient_gps_records = n_valid_gps_records>min_gps_obs_within_bout,
-      sufficient_gps_coverage = gps_coverage_ratio>min_gps_coverage_ratio,
+      sufficient_gps_records = n_valid_gps_records >= min_gps_obs_within_bout,
+      sufficient_gps_coverage = gps_coverage_ratio >= min_gps_coverage_ratio,
       median_speed = stats::median(speed, na.rm=TRUE)) %>%
-    dplyr::mutate(complete_gps = ifelse((sufficient_gps_coverage==FALSE & sufficient_gps_records == FALSE), FALSE, TRUE)) %>%
-    # can take out this ifelse since its all T/F
+    # Both criteria must hold, and a bout with no usable GPS is not complete.
+    dplyr::mutate(complete_gps = !is.na(sufficient_gps_records) & sufficient_gps_records &
+                                 !is.na(sufficient_gps_coverage) & sufficient_gps_coverage) %>%
     dplyr::select(c("bout", "complete_gps", "median_speed"))
 
   return(gps_completeness)
@@ -205,8 +206,8 @@ generate_bout_category <- function(walk_bouts, bout_radii, gps_completeness,
     dplyr::select(c(bout,bout_category))
 
   categorized_bouts <- bout_categories %>%
-    merge(walk_bouts, by = c("bout")) %>%
-    dplyr::select(-c("inactive","n_epochs_date"))
+    dplyr::left_join(walk_bouts, by = c("bout")) %>%
+    dplyr::select(-dplyr::any_of(c("inactive", "n_epochs_date")))
 
   return(categorized_bouts)
 }
