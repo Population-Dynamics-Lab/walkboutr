@@ -32,10 +32,34 @@ dataset that can be shared for collaboration.
 The pipeline is **sourced, not installed**. There is no package to build and no
 `install.packages()` step: `load.R` reads everything in `R/` into your session.
 
-### In Docker (recommended)
+### With repo2docker and RStudio (recommended)
 
-The image is based on `rocker/geospatial`, which ships the GDAL, GEOS and PROJ libraries
-that `sf`, `lwgeom` and `geosphere` need already built.
+This is the standard PDL path. It builds an image with R, RStudio and every dependency,
+then hands you a browser-based RStudio session.
+
+```bash
+repo2docker https://github.com/Population-Dynamics-Lab/walkboutr
+```
+
+Copy the link the console prints, open it, then **View > Open Jupyter Lab > RStudio**.
+In the RStudio console:
+
+```r
+source("load.R")    # loads the pipeline
+source("smoke.R")   # runs every step and prints the result
+```
+
+`runtime.txt` pins R 4.4.1 and a Posit Package Manager snapshot date, so package versions
+are fixed. `install.R` lists what gets installed.
+
+If you are on a Mac with Apple silicon, install OrbStack first and grant it command line
+access, then `uv tool install jupyter-repo2docker`.
+
+### With the plain Dockerfile
+
+A smaller, command-line-only image, with no RStudio or Jupyter. Based on
+`rocker/geospatial`, which ships the GDAL, GEOS and PROJ libraries that `sf`, `lwgeom` and
+`geosphere` need already built.
 
 ```bash
 git clone git@github.com:Population-Dynamics-Lab/walkboutr.git
@@ -43,12 +67,7 @@ cd walkboutr
 
 make docker-build     # or: docker build -t walkboutr -f docker/Dockerfile .
 make smoke            # runs every step on generated sample data
-```
-
-To work interactively, with the repository mounted at `/work`:
-
-```bash
-make docker-run       # opens an R session in the image
+make docker-run       # an interactive R session, repo mounted at /work
 ```
 
 ### On your own machine
@@ -168,7 +187,9 @@ none of those is a `walk_bout`. For more detail see the **Generate Walk Bouts** 
 R/            the pipeline, numbered by step; see R/README.md
 load.R        checks dependencies and sources R/ into your session
 smoke.R       runs every step on sample data and prints the result
-docker/       the runtime image
+runtime.txt   R version and CRAN snapshot date, read by repo2docker
+install.R     packages repo2docker installs at build time
+docker/       an alternative command-line-only image
 Makefile      docker-build, docker-run, smoke, lint
 docs/         longer walkthroughs, formerly the package vignettes
 paper.md      the article describing the method
