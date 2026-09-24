@@ -1,3 +1,14 @@
+# ------------------------------------------------------------------------------
+# SUPPORTING - not a pipeline step. Used by all three steps.
+#
+# Every threshold the pipeline uses, in two lists:
+#   parameters - callers may override these per call
+#   constants  - callers may not
+#
+# collate_arguments() merges a caller's overrides into both and hands the result
+# to whichever step asked for it.
+# ------------------------------------------------------------------------------
+
 #' Global parameters and constants
 #'
 

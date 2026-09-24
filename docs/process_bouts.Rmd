@@ -1,10 +1,6 @@
 ---
 title: "Generate Walk Bouts"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Generate Walk Bouts}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: github_document
 ---
 
 ```{r, include = FALSE}
@@ -15,7 +11,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(walkboutr)
+source(if (file.exists("load.R")) "load.R" else "../load.R")
 ```
 
 The `walkboutr` package will process GPS and accelerometry data and create two different outputs: 

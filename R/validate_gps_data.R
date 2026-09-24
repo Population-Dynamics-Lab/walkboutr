@@ -1,5 +1,10 @@
-# Input validation for GPS data, mirroring validate_accelerometry_data.R.
-# Previously buried in process_gps_data_into_gps_epochs.R while its twin had its own file.
+# ------------------------------------------------------------------------------
+# SUPPORTING - not a pipeline step. Called by step 2.
+#
+# Rejects malformed GPS input (wrong columns, wrong types, NAs, out-of-range
+# coordinates, negative speeds) before any processing runs. Mirrors
+# validate_accelerometry_data.R.
+# ------------------------------------------------------------------------------
 
 #' Validate GPS data
 #'

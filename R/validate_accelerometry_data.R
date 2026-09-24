@@ -1,3 +1,10 @@
+# ------------------------------------------------------------------------------
+# SUPPORTING - not a pipeline step. Called by step 1.
+#
+# Rejects malformed accelerometry input (wrong columns, wrong types, NAs,
+# negative counts) before any processing runs. Mirrored by validate_gps_data.R.
+# ------------------------------------------------------------------------------
+
 #' Validate accelerometry input data
 #'
 #' The input schema for the accelerometry data is `time` and `activity_counts`.

@@ -1,10 +1,6 @@
 ---
 title: "Generate Data"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Generate Data}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: github_document
 ---
 
 ```{r, include = FALSE}
@@ -16,7 +12,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(walkboutr)
+source(if (file.exists("load.R")) "load.R" else "../load.R")
 ```
 
 The `walkboutr` package has several functions to generate sample data so that you can see how the package works in practice. We generate GPS data and accelerometry data separately, as that is how you will provide your data to `walkboutr`. 

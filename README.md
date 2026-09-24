@@ -47,19 +47,15 @@ make docker-run       # opens an R session in the image
 
 You need R 4.3 or later and the system libraries for `sf`. Then:
 
-```r
-install.packages(c("data.table", "dplyr", "geosphere", "ggforce", "ggplot2",
-                   "lubridate", "lwgeom", "magrittr", "measurements", "sf",
-                   "sp", "tidyr"))
-```
-
 From the repository root:
 
 ```r
 source("load.R")
 ```
 
-That is all `smoke.R` and every example below does.
+That is all `smoke.R` and every example below does. `load.R` lists the packages the
+pipeline needs and tells you which are missing, with the `install.packages()` call to
+fix it.
 
 ## How the pipeline works
 
@@ -72,9 +68,13 @@ bottom follows the data.
 | **Step 2** | `R/step2_process_gps_data_into_gps_epochs.R` | GPS fixes | GPS snapped to the epoch grid |
 | **Step 3** | `R/step3_process_bouts_and_gps_epochs_into_walkbouts.R` | both of the above | one row per epoch with `bout_category` |
 
-`R/pipeline.R` holds the two entry points that run those steps for you. Start there.
-`R/walkboutr-package.R` has the same map in prose, including how bout categories are
-assigned.
+Steps 1 and 2 are independent; step 3 needs both. **Everything else in `R/` is
+supporting code with no position in the sequence** — validators, the two data simulators
+and the plotting function, each called from the step that needs it. Nothing runs when a
+file is sourced, so load order never matters.
+
+`R/pipeline.R` holds the two entry points that run the steps for you. Start there, then
+read [`R/README.md`](R/README.md) for the full map.
 
 Settings live in `R/parameters.R`, in two lists: `parameters`, which you can override per
 call, and `constants`, which you cannot.
@@ -344,23 +344,31 @@ none of those is a `walk_bout`. For more detail see the **Generate Walk Bouts** 
 ## Repository layout
 
 ```
-R/            the pipeline, numbered by step
-load.R        sources R/ into your session
+R/            the pipeline, numbered by step; see R/README.md
+load.R        checks dependencies and sources R/ into your session
 smoke.R       runs every step on sample data and prints the result
 docker/       the runtime image
 Makefile      docker-build, docker-run, smoke, lint
+docs/         longer walkthroughs, formerly the package vignettes
 paper.md      the article describing the method
 ```
 
+## Further reading
+
+- [`R/README.md`](R/README.md) — what each file does and the order to read them in
+- [`docs/process_bouts.Rmd`](docs/process_bouts.Rmd) — bout categories explained in full
+- [`docs/changing_default_parameters.Rmd`](docs/changing_default_parameters.Rmd) — the
+  parameters you can override
+- [`docs/generate_data.Rmd`](docs/generate_data.Rmd) — the simulated data generators
+- `paper.md` — the article describing the method
+
 ## Note on the R package
 
-`walkboutr` was published to CRAN as an R package, and `DESCRIPTION`, `NAMESPACE`, `man/`
-and `tests/` are still present. This repository is no longer built or installed as a
-package; `DESCRIPTION` is kept as the dependency manifest.
+`walkboutr` was published to CRAN as an R package version 0.5.0. This repository is no
+longer an R package: `DESCRIPTION`, `NAMESPACE`, `man/`, `tests/` and the pkgdown
+configuration have been removed, and the vignettes now live in `docs/` as ordinary
+documents. The roxygen `#'` comments in `R/` are kept as documentation, but their tags
+are inert since nothing processes them.
 
-Because nothing is installed, `?walkboutr` and the other help topics are not available,
-and the generated `man/*.Rd` files are stale. The vignettes and `tests/` still call
-`library(walkboutr)` and have not been updated.
-
-See `NEWS.md` for version 0.6.0, which fixes bugs that change bout classification relative
-to the published 0.5.0.
+See `NEWS.md` for version 0.6.0, which fixes bugs that change bout classification
+relative to the published 0.5.0.

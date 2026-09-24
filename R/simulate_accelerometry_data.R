@@ -1,6 +1,12 @@
-# Simulated accelerometry scenarios: the make_* builders that construct activity
-# count sequences for a given situation (smallest bout, full day, non-wearing period).
-# Split out of the former sample_data.R.
+# ------------------------------------------------------------------------------
+# SUPPORTING - not a pipeline step. Used by the docs and smoke.R.
+#
+# The make_* builders, each constructing one scenario as activity counts: the
+# smallest thing that counts as a bout, a full day, a non-wearing period, and so
+# on. Useful for seeing what the thresholds in parameters.R actually mean.
+#
+# Its counterpart is simulate_gps_data.R.
+# ------------------------------------------------------------------------------
 
 #' Generate accelerometry datasets
 #'

@@ -1,6 +1,11 @@
-# Simulated GPS data, used by the examples, the vignettes and smoke.R.
-# Split out of the former sample_data.R, which mixed GPS simulation with the
-# accelerometry scenario builders in simulate_accelerometry_data.R.
+# ------------------------------------------------------------------------------
+# SUPPORTING - not a pipeline step. Used by the docs and smoke.R.
+#
+# Generates GPS data for a walk in Seattle: a random walk of positions and
+# speeds from a fixed seed. Nothing here reads real data.
+#
+# Its counterpart is simulate_accelerometry_data.R.
+# ------------------------------------------------------------------------------
 
 #' Generate a dataset with date-time, speed, and latitude and longitude of someone moving
 #' through space on a walk in Seattle

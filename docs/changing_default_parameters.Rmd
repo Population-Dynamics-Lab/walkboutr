@@ -1,10 +1,6 @@
 ---
 title: "Changing Default Parameters"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Changing Default Parameters}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: github_document
 ---
 
 ```{r, include = FALSE}
@@ -15,7 +11,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(walkboutr)
+source(if (file.exists("load.R")) "load.R" else "../load.R")
 ```
 
 `walkboutr` comes with several preset parameters. The parameters that we are using are: 

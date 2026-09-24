@@ -1,3 +1,11 @@
+# ------------------------------------------------------------------------------
+# SUPPORTING - not a pipeline step. Called by you, directly.
+#
+# generate_bout_plot() draws a single bout: its accelerometry trace against the
+# activity threshold, with the bout's GPS bounding circle inset against the
+# dwell-bout threshold circle. It runs steps 1-3 internally to get what it needs.
+# ------------------------------------------------------------------------------
+
 #' Generate Bout Plot
 #'
 #' This function generates a plot of accelerometry counts and GPS radius for a specific bout.
