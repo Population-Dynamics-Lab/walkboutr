@@ -8,15 +8,14 @@
 #' @param ... Additional arguments to be passed to the function
 #' @param collated_arguments A list of collated arguments
 #'
-#' @returns A data frame containing identified walk bouts
+#' @returns A data frame with one row per epoch and the columns `bout`,
+#'   `bout_category`, `activity_counts`, `time`, `non_wearing`, `complete_day`,
+#'   `latitude`, `longitude` and `speed`.
 #'
 #' @export
 identify_walk_bouts_in_gps_and_accelerometry_data <- function(gps_data, accelerometry_counts, ..., collated_arguments = NULL){
   collated_arguments <- collate_arguments(..., collated_arguments=collated_arguments)
-  # complete_days <- generate_c_d()
   bouts <- process_accelerometry_counts_into_bouts(accelerometry_counts, collated_arguments=collated_arguments)
-  # take out the complete days processing from identify bouts
-  # merge on complete_days info
   gps_epochs <- process_gps_data_into_gps_epochs(gps_data, collated_arguments=collated_arguments)
   walk_bouts <- process_bouts_and_gps_epochs_into_walkbouts(bouts, gps_epochs, collated_arguments=collated_arguments)
   return(walk_bouts)
@@ -25,17 +24,18 @@ identify_walk_bouts_in_gps_and_accelerometry_data <- function(gps_data, accelero
 
 
 #' Summarize walking bouts:
-#' This function summarizes walking bouts and calculates the median speed, complete day, non-wearing, bout start, and duration of each bout.
+#' This function summarizes walking bouts and calculates the median speed, complete day,
+#' non-wearing, bout start, and duration of each bout.
 #'
 #' @param walk_bouts A data frame containing identified walk bouts
 #' @param ... Additional arguments to be passed to the function
 #' @param collated_arguments A list of collated arguments
 #'
-#' @returns A data frame summarizing identified walk bouts
+#' @returns A data frame with one row per bout and the columns `bout`, `median_speed`,
+#'   `complete_day`, `bout_start`, `duration` and `bout_category`.
 #'
 #' @export
 summarize_walk_bouts <- function(walk_bouts, ..., collated_arguments = NULL){
-  bout <- median <- speed <- complete_day <- time <- bout_category <- NULL
   collated_arguments <- collate_arguments(..., collated_arguments=collated_arguments)
 
   summary_walk_bouts <- walk_bouts %>%

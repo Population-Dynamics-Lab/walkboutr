@@ -9,11 +9,13 @@
 #'
 #' @param accelerometry_counts Raw accelerometry data with the expected schema.
 #'
-#' @returns This function does not return anything. It throws an error if the accelerometry data fails any of the validation checks.
+#' @returns This function does not return anything. It throws an error if the accelerometry
+#'   data fails any of the validation checks.
 #'
 #' @details The following schema validations are performed on the input data:
 #'   - The input data must contain two columns, named `time` and `activity_counts`.
-#'   - The `time` column must be in date-time format, in the UTC time zone, with no null values.
+#'   - The `time` column must be in date-time format, in the UTC time zone, with no null
+#'   values.
 #'   - The `activity_counts` column must be a positive numeric column with no null values.
 #'
 #' @examples

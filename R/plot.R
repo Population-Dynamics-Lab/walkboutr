@@ -17,7 +17,6 @@
 generate_bout_plot <- function(accelerometry_counts,gps_data,bout_number, leading_minutes = 8,
                                trailing_minutes = 12, gps_target_size = 0.25,
                                ..., collated_arguments = NULL){
-  time <- bout <- activity_counts <- NULL
   b <- bout_number
   collated_arguments <- collate_arguments(..., collated_arguments=collated_arguments)
 
@@ -79,7 +78,7 @@ generate_bout_plot <- function(accelerometry_counts,gps_data,bout_number, leadin
         }
     } else{
       circles <- p + thresh_circle
-      title <- paste0("Incomplete GPS Coverage")
+      title <- "Incomplete GPS Coverage"
       title_color <- colors$threshold
     }
     ## ACCELEROMETRY PLOT
@@ -104,9 +103,10 @@ generate_bout_plot <- function(accelerometry_counts,gps_data,bout_number, leadin
       ggplot2::geom_hline(yintercept=collated_arguments$active_counts_per_epoch_min, linetype="dashed", color = "darksalmon") +
       ggplot2::xlim(as.POSIXct(start), as.POSIXct(end)) +
       ggplot2::ylim(y_low, y_high) +
-      ggplot2::geom_text(ggplot2::aes(end, collated_arguments$active_counts_per_epoch_min, label = "Active", size = 12)) +
+      ggplot2::annotate("text", x = end, y = collated_arguments$active_counts_per_epoch_min,
+                        label = "Active", vjust = -0.5) +
       ggplot2::geom_line() +
-      ggplot2::ggtitle(paste(title)) +
+      ggplot2::ggtitle(title) +
       ggplot2::labs(x = "Time",
            y = "Accelerometer Counts") +
       ggplot2::theme_bw() +
