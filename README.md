@@ -249,7 +249,8 @@ into a rendered document; read it before running `make paper`.
   — the parameters you can override
 - [`docs/generate_data.Rmd`](docs/generate_data.Rmd) — the simulated
   data generators
-- `analysis/paper.md` — the article describing the method
+- [`analysis/paper.md`](analysis/paper.md) — the article describing the
+  method
 
 ## Note on the R package
 
