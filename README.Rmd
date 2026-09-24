@@ -81,8 +81,6 @@ That is all `smoke.R` and every example below does. `load.R` lists the packages 
 pipeline needs and tells you which are missing, with the `install.packages()` call to
 fix it.
 
-<!-- BEGIN R/README -->
-
 ## `R/` — what runs in what order
 
 **Only three files are steps, and they are numbered.** Everything else is supporting
@@ -170,8 +168,6 @@ The `#'` blocks are real documentation and worth reading. Their tags (`@export`,
 `@examples`) are inert: this repository is no longer built as an R package, so nothing
 processes them.
 
-<!-- END R/README -->
-
 ## Basic usage
 
 ### Simulated sample data
@@ -245,7 +241,6 @@ none of those is a `walk_bout`. For more detail see the **Generate Walk Bouts** 
 
 ```
 R/              the pipeline, numbered by step
-R/README.md     what each file in R/ does, and the order to read them
 load.R          checks dependencies and sources R/ into your session
 smoke.R         runs every step on sample data and prints the result
 runtime.txt     R version and CRAN snapshot date, read by repo2docker
@@ -257,16 +252,10 @@ docs/           longer walkthroughs, formerly the package vignettes
 paper.md        the article describing the method
 ```
 
-`README.Rmd` is the only one you edit. The other two are generated from it by
-`make readme`:
-
-| File | |
-|---|---|
-| `README.Rmd` | **Edit this.** Source for the page you are reading, with live R chunks — the tables and bout counts above are computed, not typed. |
-| `README.md` | Generated. The landing page. |
-| `R/README.md` | Generated too, from the "What runs in what order" section above, so GitHub also shows that guide when you browse into the `R/` folder. |
-
-Editing either generated file is pointless; the next render overwrites it.
+`README.Rmd` is the only README you edit. It has live R chunks, so the tables and
+bout counts above are computed rather than typed. `make readme` renders it to
+`README.md`, which is what GitHub shows. Editing `README.md` is pointless; the next
+render overwrites it.
 
 ## Reproducing the article's figures
 
@@ -288,7 +277,6 @@ needs in order to show anything.
 
 ## Further reading
 
-- [`R/README.md`](R/README.md) — what each file does and the order to read them in
 - [`docs/process_bouts.Rmd`](docs/process_bouts.Rmd) — bout categories explained in full
 - [`docs/changing_default_parameters.Rmd`](docs/changing_default_parameters.Rmd) — the
   parameters you can override
