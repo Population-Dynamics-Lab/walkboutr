@@ -229,11 +229,6 @@ docs/           longer walkthroughs, formerly the package vignettes
 paper.md        the article describing the method
 ```
 
-`README.Rmd` is the only README you edit. It has live R chunks, so the tables and
-bout counts above are computed rather than typed. `make readme` renders it to
-`README.md`, which is what GitHub shows. Editing `README.md` is pointless; the next
-render overwrites it.
-
 ## Reproducing the article's figures
 
 Each of the three figures in `paper.md` is one function call, so a script that
@@ -265,8 +260,7 @@ needs in order to show anything.
 `walkboutr` was published to CRAN as an R package version 0.5.0. This repository is no
 longer an R package: `DESCRIPTION`, `NAMESPACE`, `man/`, `tests/` and the pkgdown
 configuration have been removed, and the vignettes now live in `docs/` as ordinary
-documents. The roxygen `#'` comments in `R/` are kept as documentation, but their tags
-are inert since nothing processes them.
+documents.
 
 See `NEWS.md` for version 0.6.0, which fixes bugs that change bout classification
 relative to the published 0.5.0.
