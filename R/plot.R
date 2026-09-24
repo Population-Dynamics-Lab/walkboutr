@@ -50,11 +50,10 @@ generate_bout_plot <- function(accelerometry_counts, gps_data, bout_number, lead
     plot_bout_radius <- .1 * bout_radius
     plot_max_dwellbout_radii_ft <- bout_thresh_ratio * plot_bout_radius
 
-    if (collated_arguments$max_dwellbout_radii_ft > bout_radius) {
-      plot_dat_b <- data.frame(x0 = 1:(plot_max_dwellbout_radii_ft * 2.2), y0 = 1:(plot_max_dwellbout_radii_ft * 2.2)) %>% dplyr::mutate(alpha = 0.2)
-    } else {
-      plot_dat_b <- data.frame(x0 = 1:(plot_bout_radius * 2.2), y0 = 1:(plot_bout_radius * 2.2)) %>% dplyr::mutate(alpha = 0.2)
-    }
+    # One row draws one circle. This used to be thousands of rows, whose x0/y0/alpha
+    # columns were never read: the aes() below fixes the centre at the origin, so every
+    # row redrew the same circle on top of the last and ggplot warned on each call.
+    plot_dat_b <- data.frame(x0 = 0, y0 = 0)
     colors <- list(threshold = "skyblue4", data_radius = "palegreen4")
     # circle plotting code
     p <- ggplot2::ggplot() +
