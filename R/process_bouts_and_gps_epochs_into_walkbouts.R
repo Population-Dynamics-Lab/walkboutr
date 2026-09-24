@@ -45,31 +45,37 @@
 #' these functions with the original data and all new variables.
 #'
 #' @export
-process_bouts_and_gps_epochs_into_walkbouts <- function(bouts, gps_epochs, ..., collated_arguments = NULL){
+process_bouts_and_gps_epochs_into_walkbouts <- function(bouts, gps_epochs, ..., collated_arguments = NULL) {
   collated_arguments <- collate_arguments(..., collated_arguments = collated_arguments)
 
   walk_bouts <- bouts %>%
     dplyr::left_join(gps_epochs, by = "time") %>%
     dplyr::arrange(time) %>%
-    dplyr::mutate(bout = ifelse(bout==0,NA,bout))
+    dplyr::mutate(bout = ifelse(bout == 0, NA, bout))
 
   # if there are no bouts, just return the data
-  if(sum(is.na(walk_bouts$bout)) == nrow(walk_bouts)){
+  if (sum(is.na(walk_bouts$bout)) == nrow(walk_bouts)) {
     return(walk_bouts)
-  } else{
+  } else {
+    bout_radii <- generate_bout_radius(
+      walk_bouts,
+      collated_arguments$dwellbout_radii_quantile
+    ) # returns df: bout, bout_radius (numer)
+    gps_completeness <- evaluate_gps_completeness(
+      walk_bouts,
+      collated_arguments$min_gps_obs_within_bout,
+      collated_arguments$min_gps_coverage_ratio
+    ) # returns df: bout, complete_gps (T/F), median_speed
+    walk_bouts <- generate_bout_category(
+      walk_bouts, bout_radii, gps_completeness,
+      collated_arguments$max_dwellbout_radii_ft,
+      collated_arguments$max_walking_cpe,
+      collated_arguments$min_walking_speed_km_h,
+      collated_arguments$max_walking_speed_km_h
+    ) # returns df: bout, bout_category
 
-  bout_radii <- generate_bout_radius(walk_bouts,
-                                     collated_arguments$dwellbout_radii_quantile) # returns df: bout, bout_radius (numer)
-  gps_completeness <- evaluate_gps_completeness(walk_bouts,
-                                                collated_arguments$min_gps_obs_within_bout,
-                                                collated_arguments$min_gps_coverage_ratio) # returns df: bout, complete_gps (T/F), median_speed
-  walk_bouts <- generate_bout_category(walk_bouts, bout_radii, gps_completeness,
-                                       collated_arguments$max_dwellbout_radii_ft,
-                                       collated_arguments$max_walking_cpe,
-                                       collated_arguments$min_walking_speed_km_h,
-                                       collated_arguments$max_walking_speed_km_h) # returns df: bout, bout_category
-
-  return(walk_bouts) }
+    return(walk_bouts)
+  }
 }
 
 #' Outlier GPS data points
@@ -83,13 +89,13 @@ process_bouts_and_gps_epochs_into_walkbouts <- function(bouts, gps_epochs, ..., 
 #'
 #' @returns A data frame containing the latitude and longitude coordinates for the non-outlier
 #'   GPS points.
-outlier_gps_points <- function(lat_long, dwellbout_radii_quantile){
+outlier_gps_points <- function(lat_long, dwellbout_radii_quantile) {
   # outlier gps points that are above the 95% percentile of summed distances
   distance_sum <- sp::SpatialPoints(coords = base::cbind(long = lat_long$longitude, lat = lat_long$latitude)) %>%
     sp::spDists(., longlat = TRUE) %>%
     colSums()
   points_to_keep <- distance_sum < stats::quantile(distance_sum, dwellbout_radii_quantile)[[1]][1]
-  lat_long <- cbind(lat_long, points_to_keep) %>% dplyr::filter(points_to_keep==TRUE)
+  lat_long <- cbind(lat_long, points_to_keep) %>% dplyr::filter(points_to_keep == TRUE)
   return(lat_long)
 }
 
@@ -109,30 +115,30 @@ outlier_gps_points <- function(lat_long, dwellbout_radii_quantile){
 #'
 #' @returns A data frame containing the bout identifier and the radius of the bounding circle
 #'   for each walking bout.
-generate_bout_radius <- function(walk_bouts, dwellbout_radii_quantile){
-  bout_radii <- data.frame(bout = integer(), bout_radius=numeric())
+generate_bout_radius <- function(walk_bouts, dwellbout_radii_quantile) {
+  bout_radii <- data.frame(bout = integer(), bout_radius = numeric())
   bout_labels <- walk_bouts %>%
     tidyr::drop_na(bout) %>%
     dplyr::select(bout) %>%
     unique() # drop rows with NA bout label
-  for(bout_label in bout_labels$bout){
-  # pull long/lat and remove outliers
+  for (bout_label in bout_labels$bout) {
+    # pull long/lat and remove outliers
     lat_long <- walk_bouts %>%
-      dplyr::filter(bout==bout_label) %>%
+      dplyr::filter(bout == bout_label) %>%
       tidyr::drop_na()
     lat_long <- outlier_gps_points(lat_long, dwellbout_radii_quantile)
     lat_long <- lat_long %>%
       dplyr::distinct(longitude, latitude, .keep_all = TRUE)
 
-    if(nrow(lat_long) > 1){
+    if (nrow(lat_long) > 1) {
       # derive radius of bounding circle
       circle <- lat_long %>%
         dplyr::select(longitude, latitude) %>%
         as.matrix() %>% # - convert x and y columns to two-column matrix with n rows
         sf::st_multipoint() %>% # generate (x, y) coordinates
         lwgeom::st_minimum_bounding_circle()
-      circle_area <- geosphere::areaPolygon(x=circle[[1]])
-      circle_radius <- sqrt(circle_area/pi) %>% measurements::conv_unit(., from = 'm', to = 'ft')
+      circle_area <- geosphere::areaPolygon(x = circle[[1]])
+      circle_radius <- sqrt(circle_area / pi) %>% measurements::conv_unit(., from = "m", to = "ft")
     } else {
       circle_radius <- NA
     }
@@ -160,19 +166,20 @@ generate_bout_radius <- function(walk_bouts, dwellbout_radii_quantile){
 #'
 #' @returns A data frame containing information about the GPS completeness and median speed for
 #'   each bout.
-evaluate_gps_completeness <- function(walk_bouts, min_gps_obs_within_bout, min_gps_coverage_ratio){
+evaluate_gps_completeness <- function(walk_bouts, min_gps_obs_within_bout, min_gps_coverage_ratio) {
   # determine if we have sufficient gps coverage for each bout
   gps_completeness <- walk_bouts %>%
     dplyr::group_by(bout) %>%
     dplyr::summarise(
       n_valid_gps_records = sum(!is.na(speed) & !is.na(latitude) & !is.na(longitude)), # speed and GPS units
-      gps_coverage_ratio = ifelse(sum(!is.na(bout))!=0, n_valid_gps_records/sum(!is.na(bout)), NA),
+      gps_coverage_ratio = ifelse(sum(!is.na(bout)) != 0, n_valid_gps_records / sum(!is.na(bout)), NA),
       sufficient_gps_records = n_valid_gps_records >= min_gps_obs_within_bout,
       sufficient_gps_coverage = gps_coverage_ratio >= min_gps_coverage_ratio,
-      median_speed = stats::median(speed, na.rm=TRUE)) %>%
+      median_speed = stats::median(speed, na.rm = TRUE)
+    ) %>%
     # Both criteria must hold, and a bout with no usable GPS is not complete.
     dplyr::mutate(complete_gps = !is.na(sufficient_gps_records) & sufficient_gps_records &
-                                 !is.na(sufficient_gps_coverage) & sufficient_gps_coverage) %>%
+      !is.na(sufficient_gps_coverage) & sufficient_gps_coverage) %>%
     dplyr::select(c("bout", "complete_gps", "median_speed"))
 
   return(gps_completeness)
@@ -226,14 +233,14 @@ evaluate_gps_completeness <- function(walk_bouts, min_gps_obs_within_bout, min_g
 #' non_walk_incomplete_gps, dwell_bout, non_walk_too_vigorous, non_walk_slow,
 #' non_walk_fast, walk_bout.
 generate_bout_category <- function(walk_bouts, bout_radii, gps_completeness,
-                                   max_dwellbout_radii_ft, max_walking_cpe, min_walking_speed_km_h, max_walking_speed_km_h){
+                                   max_dwellbout_radii_ft, max_walking_cpe, min_walking_speed_km_h, max_walking_speed_km_h) {
   # bout categories:
-    # walk bout
-    # dwell bout
-    # nonwalk too vigorous,
-    # nonwalk too slow,
-    # nonwalk too fast,
-    # unknown lack of gps
+  # walk bout
+  # dwell bout
+  # nonwalk too vigorous,
+  # nonwalk too slow,
+  # nonwalk too fast,
+  # unknown lack of gps
   dwell_bouts <- bout_radii %>%
     dplyr::filter(!(is.na(bout))) %>%
     dplyr::left_join(gps_completeness, by = "bout") %>%
@@ -251,14 +258,16 @@ generate_bout_category <- function(walk_bouts, bout_radii, gps_completeness,
     dplyr::left_join(nonwalk_incomplete_gps, by = c("bout")) %>%
     dplyr::mutate(bout_category = "walk_bout") %>%
     dplyr::group_by(bout) %>%
-    dplyr::summarise(mean_cpe = mean(activity_counts),
-              median_speed = stats::median(speed, na.rm=TRUE),
-              bout_category = ifelse((median_speed > max_walking_speed_km_h),"non_walk_fast",bout_category),
-              bout_category = ifelse((median_speed < min_walking_speed_km_h),"non_walk_slow",bout_category),
-              bout_category = ifelse((mean_cpe > max_walking_cpe),"non_walk_too_vigorous",bout_category),
-              bout_category = ifelse(any(dwell_bout),"dwell_bout",bout_category),
-              bout_category = ifelse(any(non_walk_incomplete_gps),"non_walk_incomplete_gps",bout_category))  %>%
-    dplyr::select(c(bout,bout_category))
+    dplyr::summarise(
+      mean_cpe = mean(activity_counts),
+      median_speed = stats::median(speed, na.rm = TRUE),
+      bout_category = ifelse((median_speed > max_walking_speed_km_h), "non_walk_fast", bout_category),
+      bout_category = ifelse((median_speed < min_walking_speed_km_h), "non_walk_slow", bout_category),
+      bout_category = ifelse((mean_cpe > max_walking_cpe), "non_walk_too_vigorous", bout_category),
+      bout_category = ifelse(any(dwell_bout), "dwell_bout", bout_category),
+      bout_category = ifelse(any(non_walk_incomplete_gps), "non_walk_incomplete_gps", bout_category)
+    ) %>%
+    dplyr::select(c(bout, bout_category))
 
   categorized_bouts <- bout_categories %>%
     dplyr::left_join(walk_bouts, by = c("bout")) %>%

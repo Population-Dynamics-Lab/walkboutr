@@ -21,8 +21,10 @@
 process_gps_data_into_gps_epochs <- function(gps_data, ..., collated_arguments = NULL) {
   collated_arguments <- collate_arguments(..., collated_arguments = collated_arguments)
   validate_gps_data(gps_data)
-  gps_epochs <- assign_epoch_start_time(gps_data,
-                                        collated_arguments$epoch_length)
+  gps_epochs <- assign_epoch_start_time(
+    gps_data,
+    collated_arguments$epoch_length
+  )
   return(gps_epochs)
 }
 
@@ -40,17 +42,17 @@ process_gps_data_into_gps_epochs <- function(gps_data, ..., collated_arguments =
 #' @returns A data frame of GPS data with an additional column indicating epoch start time
 #'
 #' @export
-assign_epoch_start_time <- function(gps_data, epoch_length){
+assign_epoch_start_time <- function(gps_data, epoch_length) {
   # select the closest 30 second increment to assign epoch start time
   # if there are multiple gps data points in a given 30 second increment,
-    # takes the gps coordinates associated with the latest time
+  # takes the gps coordinates associated with the latest time
   gps_epochs <- gps_data %>%
     dplyr::mutate(epoch_time = as.numeric(time)) %>%
-    dplyr::mutate(dx_p = epoch_time%%epoch_length) %>%
-    dplyr::mutate(epoch_time = epoch_time-dx_p) %>%
+    dplyr::mutate(dx_p = epoch_time %% epoch_length) %>%
+    dplyr::mutate(epoch_time = epoch_time - dx_p) %>%
     dplyr::group_by(epoch_time) %>%
     dplyr::filter(as.numeric(time) == max(as.numeric(time))) %>%
-    dplyr::mutate(time = lubridate::as_datetime(epoch_time, tz="UTC")) %>%
+    dplyr::mutate(time = lubridate::as_datetime(epoch_time, tz = "UTC")) %>%
     dplyr::ungroup() %>%
     dplyr::select(-c(dx_p, epoch_time))
   return(gps_epochs)

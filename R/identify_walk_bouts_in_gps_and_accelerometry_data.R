@@ -13,11 +13,11 @@
 #'   `latitude`, `longitude` and `speed`.
 #'
 #' @export
-identify_walk_bouts_in_gps_and_accelerometry_data <- function(gps_data, accelerometry_counts, ..., collated_arguments = NULL){
-  collated_arguments <- collate_arguments(..., collated_arguments=collated_arguments)
-  bouts <- process_accelerometry_counts_into_bouts(accelerometry_counts, collated_arguments=collated_arguments)
-  gps_epochs <- process_gps_data_into_gps_epochs(gps_data, collated_arguments=collated_arguments)
-  walk_bouts <- process_bouts_and_gps_epochs_into_walkbouts(bouts, gps_epochs, collated_arguments=collated_arguments)
+identify_walk_bouts_in_gps_and_accelerometry_data <- function(gps_data, accelerometry_counts, ..., collated_arguments = NULL) {
+  collated_arguments <- collate_arguments(..., collated_arguments = collated_arguments)
+  bouts <- process_accelerometry_counts_into_bouts(accelerometry_counts, collated_arguments = collated_arguments)
+  gps_epochs <- process_gps_data_into_gps_epochs(gps_data, collated_arguments = collated_arguments)
+  walk_bouts <- process_bouts_and_gps_epochs_into_walkbouts(bouts, gps_epochs, collated_arguments = collated_arguments)
   return(walk_bouts)
 }
 
@@ -35,24 +35,24 @@ identify_walk_bouts_in_gps_and_accelerometry_data <- function(gps_data, accelero
 #'   `complete_day`, `bout_start`, `duration` and `bout_category`.
 #'
 #' @export
-summarize_walk_bouts <- function(walk_bouts, ..., collated_arguments = NULL){
-  collated_arguments <- collate_arguments(..., collated_arguments=collated_arguments)
+summarize_walk_bouts <- function(walk_bouts, ..., collated_arguments = NULL) {
+  collated_arguments <- collate_arguments(..., collated_arguments = collated_arguments)
 
   summary_walk_bouts <- walk_bouts %>%
     dplyr::group_by(bout) %>%
     dplyr::filter(!is.na(bout)) %>%
     dplyr::summarise(
-              median_speed = stats::median(speed, na.rm=TRUE),
-              complete_day = any(complete_day),
-              bout_start = lubridate::as_datetime(
-                min(as.numeric(time)), tz = "UTC"),
-              duration =
-                (max(as.numeric(time) + collated_arguments$epoch_length) -
-                min(as.numeric(time)))/60,
-              bout_category = (bout_category[1])
-                )
+      median_speed = stats::median(speed, na.rm = TRUE),
+      complete_day = any(complete_day),
+      bout_start = lubridate::as_datetime(
+        min(as.numeric(time)),
+        tz = "UTC"
+      ),
+      duration =
+        (max(as.numeric(time) + collated_arguments$epoch_length) -
+          min(as.numeric(time))) / 60,
+      bout_category = (bout_category[1])
+    )
 
   return(summary_walk_bouts)
 }
-
-

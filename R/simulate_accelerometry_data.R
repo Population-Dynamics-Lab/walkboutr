@@ -16,10 +16,12 @@
 #'
 #' @return A list of activity epochs
 make_active_period <- function(length = 1, is_bout = TRUE, non_wearing = FALSE, complete_day = FALSE) {
-  active_period <- data.frame(activity_counts = rep(parameters$active_counts_per_epoch_min, length),
-         bout = as.integer(is_bout),
-         non_wearing = as.logical(non_wearing),
-         complete_day = as.logical(complete_day))
+  active_period <- data.frame(
+    activity_counts = rep(parameters$active_counts_per_epoch_min, length),
+    bout = as.integer(is_bout),
+    non_wearing = as.logical(non_wearing),
+    complete_day = as.logical(complete_day)
+  )
   return(active_period)
 }
 
@@ -41,10 +43,12 @@ make_active_period <- function(length = 1, is_bout = TRUE, non_wearing = FALSE, 
 #'   complete_day are set according to the input values.
 #'
 make_inactive_period <- function(length = 1, is_bout = FALSE, non_wearing = FALSE, complete_day = FALSE) {
-  inactive_period <- data.frame(activity_counts = rep(0, length),
-         bout = as.integer(is_bout),
-         non_wearing = as.logical(non_wearing),
-         complete_day = as.logical(complete_day))
+  inactive_period <- data.frame(
+    activity_counts = rep(0, length),
+    bout = as.integer(is_bout),
+    non_wearing = as.logical(non_wearing),
+    complete_day = as.logical(complete_day)
+  )
   return(inactive_period)
 }
 
@@ -62,7 +66,7 @@ add_date_and_format <- function(counts) {
   time <- seq(lubridate::ymd_hms("2012-04-07 00:00:30"), length.out = nrow(counts), by = "30 sec")
   df <- base::cbind(counts, time)
   return(df)
-  }
+}
 
 
 
@@ -81,8 +85,10 @@ add_date_and_format <- function(counts) {
 #'   `complete_day` representing the smallest bout window.
 make_smallest_bout_window <- function(minimum_bout_length = parameters$minimum_bout_length,
                                       is_bout = TRUE, non_wearing = FALSE, complete_day = FALSE) {
-  return(make_active_period(length = minimum_bout_length, is_bout = is_bout,
-                            non_wearing = non_wearing, complete_day = complete_day))
+  return(make_active_period(
+    length = minimum_bout_length, is_bout = is_bout,
+    non_wearing = non_wearing, complete_day = complete_day
+  ))
 }
 
 
@@ -176,7 +182,7 @@ make_smallest_bout <- function() {
 #' @export
 make_smallest_bout_without_metadata <- function() {
   return(make_smallest_bout() %>%
-           dplyr::select(-c("non_wearing", "complete_day", "bout")))
+    dplyr::select(-c("non_wearing", "complete_day", "bout")))
 }
 
 
@@ -201,13 +207,13 @@ make_smallest_bout_with_largest_inactive_period <- function(maximum_number_conse
   nbw <- make_non_bout_window()
   inactive_period <- make_inactive_period(maximum_number_consec_inactive_epochs_in_bout, is_bout = TRUE)
   sbw <- make_smallest_bout_window()
-  halfway <- nrow(sbw)/2
+  halfway <- nrow(sbw) / 2
 
   counts <- dplyr::bind_rows(
     nbw,
     sbw[1:halfway, ],
     inactive_period,
-    sbw[(halfway+1):nrow(sbw), ],
+    sbw[(halfway + 1):nrow(sbw), ],
     nbw
   )
   return(add_date_and_format(counts))
@@ -303,7 +309,7 @@ make_full_day_bout_without_metadata <- function() {
 #' @export
 make_full_walk_bout_df <- function() {
   accelerometry_counts <- make_full_day_bout() %>%
-    dplyr::select(-c("bout","non_wearing","complete_day"))
+    dplyr::select(-c("bout", "non_wearing", "complete_day"))
   gps_data <- generate_walking_in_seattle_gps_data()
   bouts <- process_accelerometry_counts_into_bouts(accelerometry_counts)
   gps_epochs <- process_gps_data_into_gps_epochs(gps_data)
@@ -311,7 +317,7 @@ make_full_walk_bout_df <- function() {
   walk_bouts <- gps_epochs %>%
     dplyr::full_join(bouts, by = "time") %>%
     dplyr::arrange(time) %>%
-    dplyr::mutate(bout = ifelse(bout==0,NA,bout)) # replace 0s with NAs since they arent bouts
+    dplyr::mutate(bout = ifelse(bout == 0, NA, bout)) # replace 0s with NAs since they arent bouts
 
   return(walk_bouts)
 }

@@ -16,14 +16,13 @@
 #'
 #' @export
 generate_gps_data <- function(start_lat, start_long, start_time, n_epochs = 110, time_interval = 30.0, seed = 1234) {
-
   # set random number generator seed for reproducibility, before any draw
   set.seed(seed)
 
   # set the initial location and speed
   current_lat <- start_lat
   current_long <- start_long
-  current_speed <- stats::runif(1, 0.5, 5)  # km/h
+  current_speed <- stats::runif(1, 0.5, 5) # km/h
 
   # generate a series of locations and speeds
   directions <- stats::runif(n_epochs, 0, 2 * pi)
@@ -33,10 +32,12 @@ generate_gps_data <- function(start_lat, start_long, start_time, n_epochs = 110,
   times <- seq.POSIXt(as.POSIXct(start_time), length.out = n_epochs + 1, by = time_interval)
 
   # create a data frame with columns [time, latitude, longitude, speed]
-  df <- data.frame(time = lubridate::ymd_hms(times,tz="UTC"),
-               latitude = numeric(n_epochs + 1),
-               longitude = numeric(n_epochs + 1),
-               speed = numeric(n_epochs + 1))
+  df <- data.frame(
+    time = lubridate::ymd_hms(times, tz = "UTC"),
+    latitude = numeric(n_epochs + 1),
+    longitude = numeric(n_epochs + 1),
+    speed = numeric(n_epochs + 1)
+  )
 
   # generate latitudes, longitudes, and speeds using a loop
   df$latitude[1] <- start_lat
@@ -44,8 +45,8 @@ generate_gps_data <- function(start_lat, start_long, start_time, n_epochs = 110,
   df$speed[1] <- current_speed
 
   for (i in seq_along(directions)) {
-    df[i+1, c("latitude", "longitude")] <- next_lat_long(df[i, "latitude"], df[i, "longitude"], df[i, "speed"], directions[i], dts[i])
-    df$speed[i+1] <- stats::runif(1, .5, 5)
+    df[i + 1, c("latitude", "longitude")] <- next_lat_long(df[i, "latitude"], df[i, "longitude"], df[i, "speed"], directions[i], dts[i])
+    df$speed[i + 1] <- stats::runif(1, .5, 5)
   }
 
   return(df)
@@ -71,7 +72,6 @@ generate_gps_data <- function(start_lat, start_long, start_time, n_epochs = 110,
 #' @return A numeric vector of length 2 containing the next latitude and longitude in decimal
 #'   degrees.
 next_lat_long <- function(latitude, longitude, speed, direction, dt) {
-
   # convert the direction from radians to degrees
   direction_degrees <- direction * 180 / pi
 
@@ -90,7 +90,7 @@ next_lat_long <- function(latitude, longitude, speed, direction, dt) {
 
   # calculate the next latitude and longitude in radians
   lat2 <- lat1 + (distance_m / 6378137) * (180 / pi)
-  lon2 <- lon1 + (distance_m / 6378137) * (180 / pi) / cos(lat1 * pi/180)
+  lon2 <- lon1 + (distance_m / 6378137) * (180 / pi) / cos(lat1 * pi / 180)
 
   # convert the next latitude and longitude to decimal degrees
   lat2_degrees <- lat2 * 180 / pi
@@ -117,7 +117,7 @@ next_lat_long <- function(latitude, longitude, speed, direction, dt) {
 #' @export
 generate_walking_in_seattle_gps_data <- function(start_lat = 47.6062,
                                                  start_long = -122.3321,
-                                                 start_time = '2012-04-07 00:00:30'){
+                                                 start_time = "2012-04-07 00:00:30") {
   # Generating a sample dataset of walking in Seattle, WA, USA on April 7th, 2012
   gps_data <- generate_gps_data(start_lat = start_lat, start_long = start_long, start_time = start_time)
   return(gps_data)
