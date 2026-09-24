@@ -20,6 +20,5 @@ install.packages(c(
   "sf",           # st_multipoint, in step 3
   "sp",           # SpatialPoints/spDists, in step 3
   "tidyr",        # drop_na, in step 3
-  "knitr",        # rendering README.Rmd and docs/
-  "kableExtra"    # tables in README.Rmd
+  "knitr"         # rendering README.Rmd and docs/
 ))

@@ -1,7 +1,7 @@
 ---
 output: 
   github_document:
-always_allow_html: true
+    html_preview: false
 fontsize: 12pt
 ---
 
@@ -15,7 +15,6 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 library(knitr)
-library(kableExtra)
 ```
 
 # `walkboutr`
@@ -84,27 +83,19 @@ That is all `smoke.R` and every example below does. `load.R` lists the packages 
 pipeline needs and tells you which are missing, with the `install.packages()` call to
 fix it.
 
-## How the pipeline works
-
-Three steps run in order. The files in `R/` are numbered to match, so reading them top to
-bottom follows the data.
-
-| | File | In | Out |
-|---|---|---|---|
-| **Step 1** | `R/step1_process_accelerometry_counts_into_bouts.R` | accelerometry counts | counts + `bout`, `non_wearing`, `complete_day` |
-| **Step 2** | `R/step2_process_gps_data_into_gps_epochs.R` | GPS fixes | GPS snapped to the epoch grid |
-| **Step 3** | `R/step3_process_bouts_and_gps_epochs_into_walkbouts.R` | both of the above | one row per epoch with `bout_category` |
-
-Steps 1 and 2 are independent; step 3 needs both. **Everything else in `R/` is
-supporting code with no position in the sequence** — validators, the two data simulators
-and the plotting function, each called from the step that needs it. Nothing runs when a
-file is sourced, so load order never matters.
-
-`R/pipeline.R` holds the two entry points that run the steps for you. Start there, then
-read [`R/README.md`](R/README.md) for the full map.
-
-Settings live in `R/parameters.R`, in two lists: `parameters`, which you can override per
-call, and `constants`, which you cannot.
+```{r pipeline-map, echo = FALSE, results = "asis"}
+# R/README.md is the single source for this. It is authored there so that GitHub
+# renders it when someone browses into the R/ folder, and pulled in here so the
+# same explanation is on the landing page. Headings are demoted one level to sit
+# under this document's structure.
+lines <- readLines("R/README.md", warn = FALSE)
+in_code <- FALSE
+for (i in seq_along(lines)) {
+  if (grepl("^```", lines[i])) in_code <- !in_code
+  if (!in_code) lines[i] <- sub("^(#+) ", "\\1# ", lines[i])
+}
+cat(lines, sep = "\n")
+```
 
 ## Basic usage
 
@@ -125,14 +116,12 @@ accelerometry_counts <- make_full_day_bout_without_metadata()
 
 GPS data: 
 ```{r simulated data: gps, echo = FALSE}
-kable(head(gps_data), booktabs = TRUE)  %>% 
-  kable_styling(latex_options = "striped", full_width = TRUE, font_size = 12, position = "center")
+kable(head(gps_data))
 ```
 
 Accelerometry data:
 ```{r simulated data: acc, echo = FALSE, fig.align='center'}
-kable(head(accelerometry_counts), booktabs = TRUE)  %>% 
-  kable_styling(latex_options = "striped", full_width = TRUE, font_size = 12, position = "center")
+kable(head(accelerometry_counts))
 ```
 
 <p>
@@ -148,10 +137,7 @@ walk_bouts <- identify_walk_bouts_in_gps_and_accelerometry_data(gps_data, accele
 ```
 
 ```{r example printout, echo = FALSE}
-kable(head(walk_bouts)) %>% 
-  kableExtra::kable_styling(latex_options = "striped") %>% 
-  kableExtra::kable_styling(font_size = 12) %>% 
-  kableExtra::kable_styling(position = "center")
+kable(head(walk_bouts))
 ```
 
 ### Summarized walk bout dataset 
@@ -165,8 +151,7 @@ summary <- summarize_walk_bouts(walk_bouts)
 ```
 
 ```{r example 2 printout, echo = FALSE}
-kable(head(summary)) %>% 
-  kableExtra::kable_styling(latex_options = "striped", font_size = 12, position = "center")
+kable(head(summary))
 summary_1 <- summary %>% dplyr::filter(bout == 1)
 ```
 
@@ -197,13 +182,13 @@ docs/           longer walkthroughs, formerly the package vignettes
 paper.md        the article describing the method
 ```
 
-There are three README files and they do different jobs:
+Two files are edited, one is generated:
 
 | File | |
 |---|---|
-| `README.Rmd` | **The one to edit.** Source for the file you are reading, with live R chunks — the tables and bout counts above are computed, not typed. |
-| `README.md` | Generated from it by `make readme`. Never edit by hand; your changes are overwritten on the next render. This is what GitHub shows on the landing page. |
-| `R/README.md` | A separate, hand-written guide to the `R/` directory. GitHub renders it when you browse into that folder. Nothing generates it. |
+| `README.Rmd` | **Edit this.** Source for the page you are reading, with live R chunks — the tables and bout counts above are computed, not typed. |
+| `R/README.md` | **Edit this too.** The guide to the `R/` directory, so GitHub renders it when you browse into that folder. The "What runs in what order" section above is pulled straight from it, so it is written once and appears in both places. |
+| `README.md` | Generated from the two by `make readme`. Never edit by hand; the next render overwrites it. This is the landing page. |
 
 ## Reproducing the article's figures
 
