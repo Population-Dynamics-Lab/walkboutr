@@ -51,6 +51,9 @@ authors:
   affiliation: 1
 ---
 
+*Edited for publication by the Population Dynamics Lab: Jessica Godwin, David Coomes,
+Todd Nobles and Junhe Yang, who revised the package code and this paper.*
+
 # Walking and Measurement in Public Health Research 
 
 Walking is the most common form of physical activity and a behavior of key interest for urban planners, health promotion researchers, and rehabilitation medicine practitioners.  Data collected from monitoring devices, such as Global Positioning System (GPS) trackers and accelerometers, hold considerable public health research potential `[Feng:2013, Troped:2008]`. By analyzing patterns in individual energy expenditure and movement, these data can be used to objectively measure walking and its effects, unlocking a researcher’s ability to identify encouragement for, and barriers to, this key cardioprotective behavior across geospatial contexts and populations `[Kang:2013, Jankowska:2015]`. 
