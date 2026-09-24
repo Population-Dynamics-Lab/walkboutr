@@ -5,8 +5,8 @@ output:
 fontsize: 12pt
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file, then run:
-     Rscript render_readme.R   (or: make readme)  -->
+<!-- README.md is generated from README.Rmd. Please edit that file, then run
+     `make readme`. -->
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -224,10 +224,14 @@ runtime.txt     R version and CRAN snapshot date, read by repo2docker
 install.R       packages repo2docker installs at build time
 docker/         an alternative command-line-only image
 Makefile        docker-build, docker-run, smoke, lint, readme
-render_readme.R regenerates README.md from README.Rmd
 docs/           longer walkthroughs, formerly the package vignettes
 paper.md        the article describing the method
 ```
+
+`README.Rmd` is the only README you edit. It has live R chunks, so the tables and
+bout counts above are computed rather than typed. Run `make readme` to regenerate
+`README.md`, which is what GitHub shows. That needs pandoc; the container has it
+already. Editing `README.md` is pointless, since the next render overwrites it.
 
 ## Reproducing the article's figures
 

@@ -20,5 +20,5 @@ smoke: ## Run the pipeline end to end on sample data, in the image
 lint: ## Lint R/ on the host
 	Rscript -e 'lintr::lint_dir("R")'
 
-readme: ## Regenerate README.md from README.Rmd
-	Rscript render_readme.R
+readme: ## Regenerate README.md from README.Rmd (needs pandoc)
+	Rscript -e 'rmarkdown::render("README.Rmd")'

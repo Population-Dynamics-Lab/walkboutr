@@ -1,9 +1,21 @@
-.Rproj.user
+# R session state
+.Rproj.user/
 .Rhistory
+.RData
 .Rdata
-.httr-oauth
-.DS_Store
-inst/doc
-Rplots.pdf
-figure/
+.Ruserdata
+.Renviron
+
+# knitr and rmarkdown output. README.md is the one rendered file that IS tracked;
+# everything else these tools emit is a build artifact.
 *_files/
+*_cache/
+*.knit.md
+*.utf8.md
+figure/
+Rplots.pdf
+README.html
+
+# OS
+.DS_Store
+Thumbs.db
