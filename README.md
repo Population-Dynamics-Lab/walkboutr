@@ -1,12 +1,5 @@
----
-output: 
-  github_document:
-always_allow_html: true
-fontsize: 12pt
----
-
 <!-- README.md is generated from README.Rmd. Please edit that file, then run:
-     Rscript -e 'knitr::knit("README.Rmd")'  -->
+     Rscript render_readme.R   (or: make readme)  -->
 
 
 
@@ -363,16 +356,26 @@ none of those is a `walk_bout`. For more detail see the **Generate Walk Bouts** 
 ## Repository layout
 
 ```
-R/            the pipeline, numbered by step; see R/README.md
-load.R        checks dependencies and sources R/ into your session
-smoke.R       runs every step on sample data and prints the result
-runtime.txt   R version and CRAN snapshot date, read by repo2docker
-install.R     packages repo2docker installs at build time
-docker/       an alternative command-line-only image
-Makefile      docker-build, docker-run, smoke, lint
-docs/         longer walkthroughs, formerly the package vignettes
-paper.md      the article describing the method
+R/              the pipeline, numbered by step
+R/README.md     what each file in R/ does, and the order to read them
+load.R          checks dependencies and sources R/ into your session
+smoke.R         runs every step on sample data and prints the result
+runtime.txt     R version and CRAN snapshot date, read by repo2docker
+install.R       packages repo2docker installs at build time
+docker/         an alternative command-line-only image
+Makefile        docker-build, docker-run, smoke, lint, readme
+render_readme.R regenerates README.md from README.Rmd
+docs/           longer walkthroughs, formerly the package vignettes
+paper.md        the article describing the method
 ```
+
+There are three README files and they do different jobs:
+
+| File | |
+|---|---|
+| `README.Rmd` | **The one to edit.** Source for the file you are reading, with live R chunks — the tables and bout counts above are computed, not typed. |
+| `README.md` | Generated from it by `make readme`. Never edit by hand; your changes are overwritten on the next render. This is what GitHub shows on the landing page. |
+| `R/README.md` | A separate, hand-written guide to the `R/` directory. GitHub renders it when you browse into that folder. Nothing generates it. |
 
 ## Reproducing the article's figures
 
