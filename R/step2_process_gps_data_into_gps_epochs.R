@@ -1,3 +1,15 @@
+# ==============================================================================
+# STEP 2 of 3 - GPS fixes -> epoch-aligned GPS
+#
+# In:  gps_data (time, latitude, longitude, speed)
+# Out: the same columns, with `time` snapped to the epoch grid
+#
+# Independent of step 1; the two are joined in step 3. Where several fixes land
+# in one epoch, the latest one wins.
+#
+# Next: step3_process_bouts_and_gps_epochs_into_walkbouts.R
+# ==============================================================================
+
 #' Convert GPS data into GPS epochs
 #'
 #' The input schema for the accelerometry data is `time`, `latitude`, `longitude`, and `speed`.

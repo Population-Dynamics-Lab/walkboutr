@@ -1,3 +1,16 @@
+# ==============================================================================
+# STEP 3 of 3 - Bouts + GPS epochs -> categorised walk bouts
+#
+# In:  bouts (step 1), gps_epochs (step 2)
+# Out: one row per epoch with `bout` and `bout_category`
+#
+# Joins the two streams, measures each bout's bounding circle, judges whether
+# its GPS coverage is complete, then assigns a category. Every bout starts as
+# walk_bout and each rule overwrites the last, so the final rule wins. In
+# precedence order, highest first: non_walk_incomplete_gps, dwell_bout,
+# non_walk_too_vigorous, non_walk_slow, non_walk_fast, walk_bout.
+# ==============================================================================
+
 #' Process bouts and GPS epochs into walk bouts
 #'
 #' This function processes bouts and GPS epochs into walk bouts. It uses a set of

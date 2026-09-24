@@ -4,17 +4,11 @@ on:
     paths:
       - paper.md
       - refs.bib
-      - images/fig1.png
-      - images/fig2.png     
-      - images/fig_3.png
-      - images/fig_4.png
-      - images/fig_5.png
-      - images/table1.png
-      - images/table2.png
-      - images/table3.png
-      - images/table4.png
-      - images/table5.png
-      - images/table6.png
+      # These pointed at an images/ directory that has never existed, so they never
+      # matched. The figures paper.md embeds live at the repository root.
+      - fig2.png
+      - fig_3.png
+      - fig_5.png
       - .github/workflows/draft-pdf.yml
 
 jobs:

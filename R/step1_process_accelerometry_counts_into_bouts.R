@@ -1,3 +1,16 @@
+# ==============================================================================
+# STEP 1 of 3 - Accelerometry counts -> candidate bouts
+#
+# In:  accelerometry_counts (time, activity_counts)
+# Out: the same rows plus `bout`, `non_wearing` and `complete_day`
+#
+# Finds runs of activity above the threshold that are long enough to be a bout,
+# flags stretches of zero counts as non-wearing, and marks which local calendar
+# days have enough wearing time to count as complete.
+#
+# Next: step2_process_gps_data_into_gps_epochs.R
+# ==============================================================================
+
 #' Process Accelerometry Counts into Bouts
 #'
 #' This function processes accelerometry counts into bouts of activity and

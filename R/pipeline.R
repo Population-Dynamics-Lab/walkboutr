@@ -1,3 +1,15 @@
+# ==============================================================================
+# ENTRY POINTS - start here
+#
+# identify_walk_bouts_in_gps_and_accelerometry_data() runs steps 1, 2 and 3 in
+# order and returns every epoch labelled. Not de-identified.
+#
+# summarize_walk_bouts() collapses that to one row per bout. De-identified, and
+# the output meant for sharing.
+#
+# The steps themselves live in step1_*.R, step2_*.R and step3_*.R.
+# ==============================================================================
+
 #' Identify walking bouts in GPS and accelerometry data:
 #'
 #' This function identifies walking bouts in GPS and accelerometry data.
