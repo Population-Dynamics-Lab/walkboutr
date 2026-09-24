@@ -13,12 +13,13 @@
 
 FROM rocker/geospatial:4.4.1
 
-# Declared in DESCRIPTION Imports and not present in the base image.
-RUN install2.r --error --skipinstalled \
-      geosphere \
-      measurements \
-      ggforce \
-    && rm -rf /tmp/downloaded_packages
+# install.R is the single list of dependencies, shared with repo2docker. It skips
+# whatever the base image already ships, so this installs only the handful
+# rocker/geospatial does not carry rather than rebuilding the geospatial stack.
+# Copying just this file keeps the layer cached across edits to the pipeline.
+COPY install.R /tmp/install.R
+RUN Rscript /tmp/install.R \
+    && rm -rf /tmp/downloaded_packages /tmp/install.R
 
 WORKDIR /work
 
