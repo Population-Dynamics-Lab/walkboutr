@@ -238,8 +238,7 @@ Bouts are categorized in precedence order, highest first:
 
 `analysis/` holds `paper.md`, its figures and bibliography, the data
 dictionary, and the script that generates the paper’s tables from
-pipeline output. `paper.Rmd` there is a scaffold for turning `paper.md`
-into a rendered document; read it before running `make paper`.
+pipeline output.
 
 ## Further reading
 
