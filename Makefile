@@ -23,8 +23,8 @@ lint: ## Lint R/ on the host
 tables: ## Regenerate the paper's data dictionary tables from pipeline output
 	Rscript analysis/make_tables.R
 
-paper: tables ## Render paper.Rmd to paper.md (scaffold: see paper.Rmd first)
-	Rscript -e 'rmarkdown::render("paper.Rmd")'
+paper: tables ## Render analysis/paper.Rmd to analysis/paper.md (scaffold: read it first)
+	Rscript -e 'rmarkdown::render("analysis/paper.Rmd")'
 
 readme: ## Regenerate README.md from README.Rmd (needs pandoc)
 	Rscript -e 'rmarkdown::render("README.Rmd")'

@@ -234,9 +234,12 @@ Bouts are categorized in precedence order, highest first:
     docker/         an alternative command-line-only image
     Makefile        docker-build, docker-run, smoke, lint, tables, paper, readme
     docs/           longer walkthroughs, formerly the package vignettes
-    paper.md        the article describing the method
-    paper.Rmd       scaffold for making paper.md a rendered document; see inside
-    analysis/       the data dictionary and the script that builds the paper's tables
+    analysis/       the paper and everything that builds it
+
+`analysis/` holds `paper.md`, its figures and bibliography, the data
+dictionary, and the script that generates the paper’s tables from
+pipeline output. `paper.Rmd` there is a scaffold for turning `paper.md`
+into a rendered document; read it before running `make paper`.
 
 ## Further reading
 
@@ -246,7 +249,7 @@ Bouts are categorized in precedence order, highest first:
   — the parameters you can override
 - [`docs/generate_data.Rmd`](docs/generate_data.Rmd) — the simulated
   data generators
-- `paper.md` — the article describing the method
+- `analysis/paper.md` — the article describing the method
 
 ## Note on the R package
 

@@ -48,17 +48,18 @@ alone for now; steps 3 and 4 replace them.
 
 Delete the hand-written markdown tables and their captions, and put these in their
 place. `make tables` regenerates the source files from real pipeline output, and the
-`paper` target in the Makefile runs it first.
+`paper` target in the Makefile runs it first. Paths here are relative to this file,
+which lives in `analysis/`.
 
 ````
 ```{r table1, echo = FALSE, results = "asis"}
-cat(readLines("analysis/tables/table1.md"), sep = "\n")
+cat(readLines("tables/table1.md"), sep = "\n")
 ```
 ````
 
 ````
 ```{r table2, echo = FALSE, results = "asis"}
-cat(readLines("analysis/tables/table2.md"), sep = "\n")
+cat(readLines("tables/table2.md"), sep = "\n")
 ```
 ````
 
@@ -83,7 +84,7 @@ The second and third need the matched example data:
 
 ````
 ```{r setup-figures, include = FALSE}
-source("load.R")
+source("../load.R")
 example_data <- make_dwell_and_walk_example()
 ```
 ````
@@ -129,5 +130,5 @@ without the front matter.
 To confirm the citations resolve, which `make paper` does not check:
 
 ```
-pandoc --citeproc --bibliography=refs.bib paper.md -o /tmp/paper.pdf
+cd analysis && pandoc --citeproc --bibliography=refs.bib paper.md -o /tmp/paper.pdf
 ```
