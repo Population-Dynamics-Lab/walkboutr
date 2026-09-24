@@ -232,9 +232,11 @@ Bouts are categorized in precedence order, highest first:
     runtime.txt     R version and CRAN snapshot date, read by repo2docker
     install.R       packages repo2docker installs at build time
     docker/         an alternative command-line-only image
-    Makefile        docker-build, docker-run, smoke, lint, readme
+    Makefile        docker-build, docker-run, smoke, lint, tables, paper, readme
     docs/           longer walkthroughs, formerly the package vignettes
     paper.md        the article describing the method
+    paper.Rmd       scaffold for making paper.md a rendered document; see inside
+    analysis/       the data dictionary and the script that builds the paper's tables
 
 ## Further reading
 

@@ -1,0 +1,133 @@
+---
+output:
+  md_document:
+    variant: markdown
+    preserve_yaml: true
+---
+
+```{r scaffold-guard, include = FALSE}
+# ---------------------------------------------------------------------------
+# REMOVE THIS CHUNK once step 6 below is done.
+#
+# paper.Rmd renders to paper.md. Right now it holds instructions rather than the
+# paper, so rendering it would overwrite paper.md with these notes and lose the
+# article. This stops that from happening by accident.
+# ---------------------------------------------------------------------------
+stop(
+  "paper.Rmd is still a scaffold. Rendering it now would overwrite paper.md ",
+  "with the migration instructions. Follow the steps in paper.Rmd, then delete ",
+  "the scaffold-guard chunk.",
+  call. = FALSE
+)
+```
+
+# How to turn paper.md into a rendered document
+
+`paper.md` is hand-written today, which is why its Table 1 drifted out of step with
+the code. This file is the scaffold for making `paper.md` a generated artifact, the
+way `README.md` already is. Nothing has been migrated yet.
+
+Work through the steps below. Each one is independent, so they can land in separate
+commits.
+
+## 1. Bring the YAML front matter across
+
+Copy the whole block between the opening and closing `---` at the top of `paper.md`
+into the top of this file, **below** the `output:` block that is already here. JOSS
+reads `title`, `authors`, `affiliations`, `tags`, `date` and `bibliography` from it,
+so it has to survive into the rendered `paper.md` — which is what
+`preserve_yaml: true` above is for. Do not drop the PDL editors line underneath the
+author list.
+
+## 2. Bring the body prose across
+
+Copy everything after the closing `---` of `paper.md`. Leave the tables and figures
+alone for now; steps 3 and 4 replace them.
+
+## 3. Replace the two tables with chunks
+
+Delete the hand-written markdown tables and their captions, and put these in their
+place. `make tables` regenerates the source files from real pipeline output, and the
+`paper` target in the Makefile runs it first.
+
+````
+```{r table1, echo = FALSE, results = "asis"}
+cat(readLines("analysis/tables/table1.md"), sep = "\n")
+```
+````
+
+````
+```{r table2, echo = FALSE, results = "asis"}
+cat(readLines("analysis/tables/table2.md"), sep = "\n")
+```
+````
+
+Note that the generated Table 1 has **nine** rows, not the ten in `paper.md` today.
+The published version listed `bout_start`, `median_speed` and `duration`, which
+`summarize_walk_bouts()` returns rather than the epoch-level dataset, and omitted
+`time` and `speed`, which the epoch-level dataset does have. The article text may
+need a matching correction.
+
+## 4. Replace the figures with chunks
+
+The three figures are one function call each. Replace the `![...](fig2.png)` embeds
+with chunks along these lines, keeping the existing captions:
+
+````
+```{r fig1, echo = FALSE, fig.cap = "..."}
+generate_activity_bout_plot(make_activity_bout_example(), bout_number = 1)
+```
+````
+
+The second and third need the matched example data:
+
+````
+```{r setup-figures, include = FALSE}
+source("load.R")
+example_data <- make_dwell_and_walk_example()
+```
+````
+
+Then `generate_dwell_vs_walk_plot(example_data$accelerometry_counts,
+example_data$gps_data)` for Figure 2 and
+`generate_bout_plot(example_data$accelerometry_counts, example_data$gps_data,
+bout_number = 2)` for Figure 3.
+
+These will not match the committed PNGs. Figure 2 was drawn by hand and has no
+source anywhere; Figure 3's plotting code was never committed. Compare old against
+new before deleting `fig2.png`, `fig_3.png` and `fig_5.png`, and expect the article
+to need updating rather than the other way round.
+
+## 5. Fix the citations
+
+`paper.md` contains **zero** `@` characters, so not one of its nine citations
+resolves. They are written as inline code spans — `` `[Kang:2013]` `` — which render
+as literal monospace text and produce no bibliography. Each needs two fixes: drop the
+backticks, and convert the colon to a hyphen with an `@`, giving `[@Kang-2013]`.
+
+The keys in `refs.bib` all use hyphens. Three are never cited: `Steel-2021`,
+`Kang-2018` and `Huang-2017` — cite them or remove them.
+
+There is also an unresolved review comment still in the source, around the Figure 1
+discussion, beginning `<!-- JLG:`.
+
+## 6. Delete the scaffold-guard chunk
+
+The `stop()` at the top of this file exists only to protect `paper.md` while this
+scaffold is unfinished. Once steps 1 to 5 are done, delete that chunk.
+
+## 7. Render
+
+```
+make paper
+```
+
+That runs `make tables` first, then renders this file to `paper.md`. Check the result
+before committing: `preserve_yaml` is easy to get wrong, and JOSS will not build
+without the front matter.
+
+To confirm the citations resolve, which `make paper` does not check:
+
+```
+pandoc --citeproc --bibliography=refs.bib paper.md -o /tmp/paper.pdf
+```
