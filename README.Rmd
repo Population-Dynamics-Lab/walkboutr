@@ -228,29 +228,6 @@ docs/           longer walkthroughs, formerly the package vignettes
 paper.md        the article describing the method
 ```
 
-`README.Rmd` is the only README you edit. It has live R chunks, so the tables and
-bout counts above are computed rather than typed. Run `make readme` to regenerate
-`README.md`, which is what GitHub shows. That needs pandoc; the container has it
-already. Editing `README.md` is pointless, since the next render overwrites it.
-
-## Reproducing the article's figures
-
-Each of the three figures in `paper.md` is one function call, so a script that
-regenerates them needs no plotting code of its own:
-
-```{r figures, eval = FALSE}
-example_data <- make_dwell_and_walk_example()
-
-generate_activity_bout_plot(make_activity_bout_example(), bout_number = 1)
-generate_dwell_vs_walk_plot(example_data$accelerometry_counts, example_data$gps_data)
-generate_bout_plot(example_data$accelerometry_counts, example_data$gps_data, bout_number = 2)
-```
-
-Each takes raw accelerometry counts and GPS data and runs whatever pipeline steps it
-needs. `make_dwell_and_walk_example()` produces a matched pair of bouts whose bounding
-circles fall either side of the 66 ft dwell threshold, which is what the second figure
-needs in order to show anything.
-
 ## Further reading
 
 - [`docs/process_bouts.Rmd`](docs/process_bouts.Rmd) — bout categories explained in full
