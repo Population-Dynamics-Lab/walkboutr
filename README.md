@@ -59,9 +59,8 @@ make docker-run       # an interactive R session, repo mounted at /work
 
 ### On your own machine
 
-You need R 4.3 or later and the system libraries for `sf`. Then:
-
-From the repository root:
+You need R 4.3 or later and the system libraries for `sf`. From the
+repository root:
 
 ``` r
 source("load.R")
@@ -70,6 +69,8 @@ source("load.R")
 That is all `smoke.R` and every example below does. `load.R` lists the
 packages the pipeline needs and tells you which are missing, with the
 `install.packages()` call to fix it.
+
+<!-- BEGIN R/README -->
 
 ## `R/` — what runs in what order
 
@@ -164,6 +165,8 @@ precedence order, highest first:
 The `#'` blocks are real documentation and worth reading. Their tags
 (`@export`, `@examples`) are inert: this repository is no longer built
 as an R package, so nothing processes them.
+
+<!-- END R/README -->
 
 ## Basic usage
 
@@ -265,13 +268,17 @@ Bouts are categorized in precedence order, highest first:
     docs/           longer walkthroughs, formerly the package vignettes
     paper.md        the article describing the method
 
-Two files are edited, one is generated:
+`README.Rmd` is the only one you edit. The other two are generated from
+it by `make readme`:
 
 | File |  |
 |----|----|
 | `README.Rmd` | **Edit this.** Source for the page you are reading, with live R chunks — the tables and bout counts above are computed, not typed. |
-| `R/README.md` | **Edit this too.** The guide to the `R/` directory, so GitHub renders it when you browse into that folder. The “What runs in what order” section above is pulled straight from it, so it is written once and appears in both places. |
-| `README.md` | Generated from the two by `make readme`. Never edit by hand; the next render overwrites it. This is the landing page. |
+| `README.md` | Generated. The landing page. |
+| `R/README.md` | Generated too, from the “What runs in what order” section above, so GitHub also shows that guide when you browse into the `R/` folder. |
+
+Editing either generated file is pointless; the next render overwrites
+it.
 
 ## Reproducing the article’s figures
 
