@@ -3,132 +3,143 @@ output:
   md_document:
     variant: markdown
     preserve_yaml: true
+title: 'Walkboutr: Extracting Walk Bouts from GPS and Accelerometry Data for Physical
+  Activity Research'
+tags:
+- R
+- physical activity
+- public health
+- walking
+- accelerometry
+- global positioning system
+date: "2023-09-26"
+affiliations:
+- name: University of Washington, School of Public Health, Department of Epidemiology,
+    United States
+  index: 1
+- name: University of Washington, Biomedical Informatics and Medical Education, School
+    of Medicine, United States
+  index: 2
+- name: University of Washington, Center for Studies in Demography and Ecology, United
+    States
+  index: 3
+- name: University of Washington, Urban Design and Planning, College of Built Environments,
+    United States
+  index: 4
+- name: Department of Architecture and Architectural Engineering, Seoul National University, South Korea
+  index: 5
+- name: Seattle Children's Research Institute, United States
+  index: 6
+bibliography: refs.bib
+authors:
+- name: Lauren Blair Wilner
+  corresponding: true
+  affiliation: 1
+  orcid: "0000-0003-4439-3734"
+- name: Weipeng Zhou
+  affiliation: 2
+- name: Philip M Hurvitz
+  affiliation: 3
+- name: Anne V Moudon
+  affiliation: 4
+- name: Bumjoon Kang
+  affiliation: 5
+- name: Brian E Saelens
+  affiliation: 6
+- name: Jimmy Phuong
+  affiliation: 2
+- name: Matthew Dekker
+  affiliation: 1
+- name: Stephen J Mooney
+  affiliation: 1
 ---
+*Edited for publication by the Population Dynamics Lab: Jessica Godwin, David Coomes,
+Todd Nobles and Junhe Yang, who revised the package code and this paper.*
 
-```{r scaffold-guard, include = FALSE}
-# ---------------------------------------------------------------------------
-# REMOVE THIS CHUNK once step 6 below is done.
-#
-# paper.Rmd renders to paper.md. Right now it holds instructions rather than the
-# paper, so rendering it would overwrite paper.md with these notes and lose the
-# article. This stops that from happening by accident.
-# ---------------------------------------------------------------------------
-stop(
-  "paper.Rmd is still a scaffold. Rendering it now would overwrite paper.md ",
-  "with the migration instructions. Follow the steps in paper.Rmd, then delete ",
-  "the scaffold-guard chunk.",
-  call. = FALSE
-)
-```
-
-# How to turn paper.md into a rendered document
-
-`paper.md` is hand-written today, which is why its Table 1 drifted out of step with
-the code. This file is the scaffold for making `paper.md` a generated artifact, the
-way `README.md` already is. Nothing has been migrated yet.
-
-Work through the steps below. Each one is independent, so they can land in separate
-commits.
-
-## 1. Bring the YAML front matter across
-
-Copy the whole block between the opening and closing `---` at the top of `paper.md`
-into the top of this file, **below** the `output:` block that is already here. JOSS
-reads `title`, `authors`, `affiliations`, `tags`, `date` and `bibliography` from it,
-so it has to survive into the rendered `paper.md` — which is what
-`preserve_yaml: true` above is for. Do not drop the PDL editors line underneath the
-author list.
-
-## 2. Bring the body prose across
-
-Copy everything after the closing `---` of `paper.md`. Leave the tables and figures
-alone for now; steps 3 and 4 replace them.
-
-## 3. Replace the two tables with chunks
-
-Delete the hand-written markdown tables and their captions, and put these in their
-place. `make tables` regenerates the source files from real pipeline output, and the
-`paper` target in the Makefile runs it first. Paths here are relative to this file,
-which lives in `analysis/`.
-
-````
-```{r table1, echo = FALSE, results = "asis"}
-cat(readLines("tables/table1.md"), sep = "\n")
-```
-````
-
-````
-```{r table2, echo = FALSE, results = "asis"}
-cat(readLines("tables/table2.md"), sep = "\n")
-```
-````
-
-Note that the generated Table 1 has **nine** rows, not the ten in `paper.md` today.
-The published version listed `bout_start`, `median_speed` and `duration`, which
-`summarize_walk_bouts()` returns rather than the epoch-level dataset, and omitted
-`time` and `speed`, which the epoch-level dataset does have. The article text may
-need a matching correction.
-
-## 4. Replace the figures with chunks
-
-The three figures are one function call each. Replace the `![...](fig2.png)` embeds
-with chunks along these lines, keeping the existing captions:
-
-````
-```{r fig1, echo = FALSE, fig.cap = "..."}
-generate_activity_bout_plot(make_activity_bout_example(), bout_number = 1)
-```
-````
-
-The second and third need the matched example data:
-
-````
 ```{r setup-figures, include = FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 source("../load.R")
 example_data <- make_dwell_and_walk_example()
 ```
-````
 
-Then `generate_dwell_vs_walk_plot(example_data$accelerometry_counts,
-example_data$gps_data)` for Figure 2 and
-`generate_bout_plot(example_data$accelerometry_counts, example_data$gps_data,
-bout_number = 2)` for Figure 3.
+# Walking and Measurement in Public Health Research 
 
-These will not match the committed PNGs. Figure 2 was drawn by hand and has no
-source anywhere; Figure 3's plotting code was never committed. Compare old against
-new before deleting `fig2.png`, `fig_3.png` and `fig_5.png`, and expect the article
-to need updating rather than the other way round.
+Walking is the most common form of physical activity and a behavior of key interest for urban planners, health promotion researchers, and rehabilitation medicine practitioners.  Data collected from monitoring devices, such as Global Positioning System (GPS) trackers and accelerometers, hold considerable public health research potential [@Feng-2013; @Troped-2008]. By analyzing patterns in individual energy expenditure and movement, these data can be used to objectively measure walking and its effects, unlocking a researcher’s ability to identify encouragement for, and barriers to, this key cardioprotective behavior across geospatial contexts and populations [@Kang-2013; @Jankowska-2015]. 
 
-## 5. Fix the citations
+While GPS devices and accelerometers provide the gold standard measurement approach for walking, processing accelerometer and GPS device traces to identify walking is a computational and algorithmic challenge. In their raw form – a series of timestamps, locations, and accelerometer counts – monitoring data are rarely of direct researcher interest and may also contain subject-identifying location data. Further, it can be challenging to process these data efficiently to identify behaviors of interest (e.g. periods of walking).  Some methods to identify travel using personal monitoring data (e.g. PALMS,and its successor HABITUS) (https://www.habitus.eu) process data on secure servers [@Carlson-2015]; however, researchers whose privacy agreements with study participants preclude storing data on 3rd party servers may prefer a local R package.  To address this gap, we developed a package, `walkboutr`, that implements a previously validated algorithm to extract patterns in monitoring data consistent with walking [@Kang-2013] that may be safely shared across research teams.  `walkboutr` allows researchers to (1) process raw personal time stamp-linked GPS and accelerometry data for identifying periods and locations of walking and (2) create a deidentified summary of walking behavior that can be used in research and practice. 
 
-`paper.md` contains **zero** `@` characters, so not one of its nine citations
-resolves. They are written as inline code spans — `` `[Kang:2013]` `` — which render
-as literal monospace text and produce no bibliography. Each needs two fixes: drop the
-backticks, and convert the colon to a hyphen with an `@`, giving `[@Kang-2013]`.
+# Definition of a walk bout
 
-The keys in `refs.bib` all use hyphens. Three are never cited: `Steel-2021`,
-`Kang-2018` and `Huang-2017` — cite them or remove them.
+A walk bout is defined as a period of activity in which (1) an accelerometer trace indicates movement consistent with walking (e.g., based on speed) and (2) a GPS traces from the corresponding time period indicate movement through space (e.g., based on distance traveled). The idea of a walk bout derives from the physical activity literature, in which monitored time is partitioned into ‘activity bouts’ and inactive time.  **A walk bout is a physical activity bout in which both activity count range and GPS trace is consistent with walking** [@Kang-2013].  
 
-There is also an unresolved review comment still in the source, around the Figure 1
-discussion, beginning `<!-- JLG:`.
+To identify physical activity bouts, the package first classify each non-overlapping discrete time window of accelerometry observations, or epoch, as *active* or *inactive* following Troiano et al [@Troiano-2008].  Next, a physical activity bout is any contiguous set of epochs that contains a segment of cumulative active epochs that are preceded and followed by segments of consecutive inactive epochs. These bouts indicate periods of time in which the wearer appears to be physically active, though not necessarily walking (e.g., they could be playing a sport or working out). 
 
-## 6. Delete the scaffold-guard chunk
+Physical activity bouts are further classified as a *walk bout* or *dwell bout* based on GPS traces.  A dwell bout is a physical activity bout in which an individual did not leave a pre-specified radius [@Kang-2013]. A walk bout is physical activity bout that is *not* a dwell bout, has a median speed consistent with that of walking, and has sufficient GPS coverage.
 
-The `stop()` at the top of this file exists only to protect `paper.md` while this
-scaffold is unfinished. Once steps 1 to 5 are done, delete that chunk.
+## Using the `walkboutr` package
+### I. Identifying physical activity bouts
 
-## 7. Render
+First, observed accelerometry epochs along each axis in three-dimensional space are processed to remove noise and gravitational effects. The total count per epoch (CPE) is calculated as the sum of absolute values across all three axes and epochs with a CPE above a selected threshold are considered active. For example, epochs 30 seconds in length with a CPE of 500 or higher are classified as *active* by the `walkboutr` package. While threshold is relatively low threshold compared with other physical activity research, it allows for capture of slow walking. (Note: epoch length and CPE threshold can be set by the package user.)
 
-```
-make paper
+A physical activity bout is identified as a collection of consecutive epochs that is preceded and followed by a collection consecutive inactive epochs. First, the data are divided into potential physical activity bouts and non-bouts using a run-length encoding algorithm to identify subsequences with at least 4 consecutive active epochs. Physical activity bouts are then identified from the potential bouts by filtering to those with 10 consecutive active epochs preceded and followed by at least 4 inactive epochs, as shown in Figure 1. These thresholds can be changed by the package user if desired. Note, `walkboutr` considers a physical activity bout to include the relevant active epochs and 3 culminating inactive epochs.
+
+```{r fig1, echo = FALSE, fig.cap = "**Identifying physical activity bouts from accelerometer epochs.** An accelerometry trace indicating a physical activity bout, where the bout period is indicated by the gray bounds and the epochs outside of these bounds are not included in the bout. The blue line shows the threshold for an individual being considered active, which defaults to 500 CPE in `walkboutr`.\\label{fig:1}"}
+generate_activity_bout_plot(make_activity_bout_example(), bout_number = 1)
 ```
 
-That runs `make tables` first, then renders this file to `paper.md`. Check the result
-before committing: `preserve_yaml` is easy to get wrong, and JOSS will not build
-without the front matter.
+If no bouts are identified, `walkboutr` stops and returns a message indicating that there are no bouts. If there are physical activity bouts, `walkboutr` labels each bout with a numeric value. These bouts will later be labeled as either walk bouts or non-walk bouts. In addition to finding all bouts in the accelerometry data, `walkboutr` identifies non-wearing periods in the accelerometry data when there are 20 consecutive minutes in which activity counts are 0 CPE [@Saelens-2014]. Finally, `walkboutr` flags whether the subject wore their accelerometer for a "complete day", or provided at least 8-hours of data [@Saelens-2014].  As with other parameters, the package user may modify the non-threshholds for flagging non-wearing periods and complete days.
 
-To confirm the citations resolve, which `make paper` does not check:
+### II. Merging GPS and accelerometer data
 
+Once physical activity bouts are identified, `walkboutr` uses GPS data to classify bouts as walking or not walking.  First, `walkboutr` merges GPS and accelerometry data by timestamp.  This merge is complex for two reasons: (1) accelerometry data are typically recorded in local time whereas GPS devices record in UTC time, and (2) accelerometers record activity in consistent epochs from the time they are turned on, whereas GPS devices only record when they receive responses from GPS satellites.  A fully launched GPS device pings satellites on a regular schedule, often aligned by design with accelerometer epochs.  However, when devices re-establish connections with satellites (e.g., after a device restart or after time spent in a tunnel), timestamps may be off-alignment.  Accordingly, for each recorded GPS point, `walkboutr` identifies the accelerometer epoch synchronized local time zone of the GPS points (accounting for daylight saving time) before merging the datasets. When multiple GPS points fall within one accelerometer epoch, `walkboutr` will assign the latest GPS point within the epoch to reconcile duplications.
+
+Next, `walkboutr` determines whether each bout is a walk bout or a dwell bout.  For each bout, a circle is constructed so that it is centered at the GPS point cloud median and includes the inner 95% of all GPS points.  As shown in Figure 2, bout is classified as a dwell bout (i.e., not walking) if the radies of the constructed circle is smaller than a prespecified threshhold. If the bout's constructed circle is larger than the dwell bout threshhold, that physical activity bout is a walk bout [@Kang-2013].  By default, `walkboutr` prespecifies the dwell bout circle radius at 66 feet, but this parameter may be changed.
+
+```{r fig2, echo = FALSE, fig.cap = "**Classifying physical activity bouts as walk bouts or dwell bouts.** An individual's physical activity bout is classified as a walk bout (right) if the constructed circle (dashed green circles) containing 95\\% of the bout's GPS points and centered on the median GPS location, is larger than the prespecified dwell bout threshold with a radius of 66 feet (dotted brown circles) and a dwell bout (left) otherwise.\\label{fig:2}"}
+generate_dwell_vs_walk_plot(example_data$accelerometry_counts, example_data$gps_data)
 ```
-cd analysis && pandoc --citeproc --bibliography=refs.bib paper.md -o /tmp/paper.pdf
+
+GPS data for each bout are evaluated for completeness, assessed both in terms of the number of GPS observations within a bout as well as the proportion of acceleremotry observations that have GPS data. By default, a bout has sufficient GPS coverage if it has at least five GPS observations and at least 20% of the epochs have a paired GPS observation. 
+
+The final `walkboutr` output labels each physical activity bout as either a walk bout or a non-walk bout, with a specific label for five different types of non-walk bouts [@Kang-2013].  Each physical activity bout can have just one category, making the order of labeling important. In order, `walkboutr` applies the following labels:    
+
+1.	**non_walk_incomplete_gps**: all physical activity bouts without complete GPS data, 
+2.	**non_walk_too_fast**: remaining physical activity bouts where the median speed exceeds the maximum walking speed (default: 6 km/h),
+3.	**non_walk_too_slow**: remaining physical activity bouts where the median speed falls below the minimum walking speed (default: 2 km/h), 
+4.	**non_walk_too_vigorous**: remaining physical activity bouts whose mean CPE are too vigorous to be considered walking (default: > 2,863 CPE), 
+5. **dwell_bout**: remaining physical activity bouts whose GPS data do not exceed a circular dwell bout threshhold radius (default: 66 ft), and, finally,
+6.	**walk_bout**: remaining physical activity bouts.
+
+###  Producing walk bout datasets for analysis
+
+From the processed GPS and accelerometry data, a complete, epoch-level dataset (containing epoch time as date-time in the UTC time zone, accelerometry counts per epoch, latitude, longitude, epoch speed, and wearing day complete flag) is used to create two different output datasets:
+
+The first output is a complete, epoch-level dataset (Table 1) that returns all of the original input data that the user provided and the new columns `walkboutr` created. This dataset is not de-identified, and thus is appropriate for investigators interested in exploring where people walk [@Dalmat-2021].
+
+
+```{r table1, echo = FALSE, results = "asis"}
+cat(readLines("tables/table1.md"), sep = "\n")
 ```
+
+The second output is a summary, bout-level dataset (Table 2) that has been de-identified and collapsed to only include summary walk bout information. This dataset is intended to provide essential walking and physical activity metrics without any identifying information – thus serving as a product that can be easily shared. This dataset can be used in analyses where walking or walking frequency is the outcome, e.g. research studies identifying external factors or neighborhood features that do or do not increase walking in a population [@Mooney-2020]. 
+
+```{r table2, echo = FALSE, results = "asis"}
+cat(readLines("tables/table2.md"), sep = "\n")
+```
+
+The `walkboutr` package also produces summary figures describing the walk bouts. This figure shows a walk bout where the accelerometry counts exceed the threshold for being considered active in combination with an image of the ratio of radii of the bout to the the dwell bout threshold. In the example in Figure 3, the physical activity bout in the gray box is classified as a walk bout, because (1) the activity CPE are consistent with that of walking and (2) the bout area is larger than that of the dwell bout.  
+
+```{r fig3, echo = FALSE, fig.cap = "**Summary figure of a walk bout.** \\label{fig:3}"}
+generate_bout_plot(example_data$accelerometry_counts, example_data$gps_data, bout_number = 2)
+```
+
+# Conclusions and future directions
+
+`walkboutr` enables researchers to leverage data collected from monitoring devices such as GPS trackers and accelerometers to more objectively measure walking behavior and its associated impacts on health across diverse geospatial contexts and populations. 
+
+By implementing a validated algorithm, `walkboutr` facilitates not only the identification of walking periods in a consistent and user-friendly manner, thereby bridging the gap between raw data and actionable insights, but also allows researchers to process complex and identifiable monitoring data into shareable insights. 
+
+As public health research increasingly embraces data-driven methodologies, the `walkboutr` package emerges as a tool for researchers to expand their collaborations and datasets. It may serve as an example of how public health researchers can begin to shift towards a new era of collaborative, privacy-conscious, and data-rich health research. By facilitating the extraction of valuable insights from monitoring data without compromising on privacy nor ethics, the package paves the way for a more informed understanding of human behavior, health, and well-being in the world of big data.  
+  
+
+*Acknowledgements: We thank Amy Youngbloom for her contributions and assistance in vetting these methods.*
