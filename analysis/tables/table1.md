@@ -1,3 +1,5 @@
+**Table 1. Complete, epoch-level dataset.** The first column contains the dataset column names, the second column contains the object class of each dataset feature, and the final column provides a definition of each feature.
+
 |Column          |Class     |Definition                                                                                                                                                                  |
 |:---------------|:---------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 |bout            |Numeric   |A label for each walk bout. Each bout is sequentially numbered for easier identification. NA where the epoch is not part of a bout.                                         |
@@ -9,5 +11,3 @@
 |latitude        |Numeric   |Latitude coordinate for the epoch, from the GPS data.                                                                                                                       |
 |longitude       |Numeric   |Longitude coordinate for the epoch, from the GPS data.                                                                                                                      |
 |speed           |Numeric   |Speed at this epoch in kilometres per hour, from the GPS data.                                                                                                              |
-
-**Table 1. Complete, epoch-level dataset.** The first column contains the dataset column names, the second column contains the object class of each dataset feature, and the final column provides a definition of each feature.
