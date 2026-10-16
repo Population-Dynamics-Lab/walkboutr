@@ -80,7 +80,7 @@ tables <- list(
 for (name in names(tables)) {
   path <- file.path(output_dir, paste0(name, ".md"))
   writeLines(
-    c(knitr::kable(tables[[name]]$data, format = "pipe"), "", tables[[name]]$caption),
+    c(tables[[name]]$caption, "", knitr::kable(tables[[name]]$data, format = "pipe")),
     path
   )
   cat("wrote", path, "-", nrow(tables[[name]]$data), "rows\n")
