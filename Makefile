@@ -1,7 +1,7 @@
 # walkboutr pipeline. Run from the repository root.
 
 IMAGE := walkboutr
-DOCKER_RUN := docker run --rm -v "$$PWD:/work" -w /work $(IMAGE)
+DOCKER_RUN := docker run --rm --platform linux/amd64 -v "$$PWD:/work" -w /work $(IMAGE)
 
 .PHONY: help docker-build docker-run smoke lint tables paper readme
 
@@ -9,7 +9,7 @@ help:
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/'
 
 docker-build: ## Build the pipeline image
-	docker build -t $(IMAGE) -f docker/Dockerfile .
+	docker build --platform linux/amd64 -t $(IMAGE) -f docker/Dockerfile .
 
 docker-run: ## Open an R session in the image, repo mounted at /work
 	$(DOCKER_RUN) R

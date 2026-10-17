@@ -49,10 +49,15 @@ source("smoke.R")   # runs every step and prints the result
 ```
 
 `runtime.txt` pins R 4.4.1 and a Posit Package Manager snapshot date, so package versions
-are fixed. `install.R` lists what gets installed.
+are fixed. `apt.txt` and `install.R` list what gets installed.
 
 If you are on a Mac with Apple silicon, install OrbStack first and grant it command line
-access, then `uv tool install jupyter-repo2docker`.
+access, then `uv tool install jupyter-repo2docker` and pass the `linux/amd64` platform and
+a container user ID `>= 1000` (required by RStudio Server on Linux):
+
+```bash
+repo2docker --Repo2Docker.platform=linux/amd64 --user-id 1000 --user-name jovyan https://github.com/Population-Dynamics-Lab/walkboutr
+```
 
 ### With the plain Dockerfile
 
@@ -221,6 +226,7 @@ R/              the pipeline, numbered by step
 load.R          checks dependencies and sources R/ into your session
 smoke.R         runs every step on sample data and prints the result
 runtime.txt     R version and CRAN snapshot date, read by repo2docker
+apt.txt         system libraries (GDAL, GEOS, PROJ, UDUNITS) repo2docker installs
 install.R       packages repo2docker installs at build time
 docker/         an alternative command-line-only image
 Makefile        docker-build, docker-run, smoke, lint, tables, paper, readme

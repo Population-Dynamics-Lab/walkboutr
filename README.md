@@ -5,7 +5,6 @@
 # `walkboutr`
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 `walkboutr` turns GPS and accelerometry data into walking bouts. It
@@ -37,10 +36,17 @@ source("smoke.R")   # runs every step and prints the result
 ```
 
 `runtime.txt` pins R 4.4.1 and a Posit Package Manager snapshot date, so
-package versions are fixed. `install.R` lists what gets installed.
+package versions are fixed. `apt.txt` and `install.R` list what gets
+installed.
 
 If you are on a Mac with Apple silicon, install OrbStack first and grant
-it command line access, then `uv tool install jupyter-repo2docker`.
+it command line access, then `uv tool install jupyter-repo2docker` and
+pass the `linux/amd64` platform and a container user ID `>= 1000`
+(required by RStudio Server on Linux):
+
+``` bash
+repo2docker --Repo2Docker.platform=linux/amd64 --user-id 1000 --user-name jovyan https://github.com/Population-Dynamics-Lab/walkboutr
+```
 
 ### With the plain Dockerfile
 
@@ -80,13 +86,13 @@ executes when a file is sourced, so `load.R` can read them in any order.
 
 If you are reading the code for the first time, go in this order:
 
-| Order | File | Role |
-|----|----|----|
-| 1 | `pipeline.R` | **Start here.** The two entry points. Shows the three steps in sequence in about five lines. |
-| 2 | `parameters.R` | Every threshold the pipeline uses, in two lists. Read before the steps so the numbers in them mean something. |
-| 3 | `step1_process_accelerometry_counts_into_bouts.R` | Accelerometry counts → candidate bouts. |
-| 4 | `step2_process_gps_data_into_gps_epochs.R` | GPS fixes → epoch-aligned GPS. Independent of step 1. |
-| 5 | `step3_process_bouts_and_gps_epochs_into_walkbouts.R` | Both of the above → categorised walk bouts. |
+| Order | File                                                  | Role                                                                                                          |
+|-------|-------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| 1     | `pipeline.R`                                          | **Start here.** The two entry points. Shows the three steps in sequence in about five lines.                  |
+| 2     | `parameters.R`                                        | Every threshold the pipeline uses, in two lists. Read before the steps so the numbers in them mean something. |
+| 3     | `step1_process_accelerometry_counts_into_bouts.R`     | Accelerometry counts → candidate bouts.                                                                       |
+| 4     | `step2_process_gps_data_into_gps_epochs.R`            | GPS fixes → epoch-aligned GPS. Independent of step 1.                                                         |
+| 5     | `step3_process_bouts_and_gps_epochs_into_walkbouts.R` | Both of the above → categorised walk bouts.                                                                   |
 
 ### Execution order
 
@@ -113,15 +119,15 @@ needs both.
 These have no position in the sequence. Each is called from the step
 that needs it.
 
-| File | Called by | What it does |
-|----|----|----|
-| `parameters.R` | all steps | `parameters` (overridable per call), `constants` (not overridable), and `collate_arguments()`, which merges caller overrides in. |
-| `validate_accelerometry_data.R` | step 1 | Rejects malformed accelerometry input before anything else runs. |
-| `validate_gps_data.R` | step 2 | The same for GPS input. |
-| `plot.R` | you, directly | Plotting functions for inspecting a bout. |
-| `simulate_gps_data.R` | examples, `smoke.R` | Generates GPS data for a walk in Seattle. |
-| `simulate_accelerometry_data.R` | examples, `smoke.R` | The `make_*` builders, each constructing a specific scenario (smallest bout, full day, non-wearing period). |
-| `simulate_example_bouts.R` | `plot.R` | Data shaped like real data. The `make_*` builders above produce square waves and `generate_gps_data()` wanders for miles, neither of which plots usefully. |
+| File                            | Called by           | What it does                                                                                                                                               |
+|---------------------------------|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `parameters.R`                  | all steps           | `parameters` (overridable per call), `constants` (not overridable), and `collate_arguments()`, which merges caller overrides in.                           |
+| `validate_accelerometry_data.R` | step 1              | Rejects malformed accelerometry input before anything else runs.                                                                                           |
+| `validate_gps_data.R`           | step 2              | The same for GPS input.                                                                                                                                    |
+| `plot.R`                        | you, directly       | Plotting functions for inspecting a bout.                                                                                                                  |
+| `simulate_gps_data.R`           | examples, `smoke.R` | Generates GPS data for a walk in Seattle.                                                                                                                  |
+| `simulate_accelerometry_data.R` | examples, `smoke.R` | The `make_*` builders, each constructing a specific scenario (smallest bout, full day, non-wearing period).                                                |
+| `simulate_example_bouts.R`      | `plot.R`            | Data shaped like real data. The `make_*` builders above produce square waves and `generate_gps_data()` wanders for miles, neither of which plots usefully. |
 
 ### Bout categories
 
@@ -189,14 +195,14 @@ summary dataset that is de-identified and shareable.
 walk_bouts <- identify_walk_bouts_in_gps_and_accelerometry_data(gps_data, accelerometry_counts)
 ```
 
-| bout | bout_category | activity_counts | time | non_wearing | complete_day | latitude | longitude | speed |
-|---:|:---|---:|:---|:---|:---|---:|---:|---:|
-| 1 | walk_bout | 500 | 2012-04-07 00:02:30 | FALSE | FALSE | 47.62716 | -122.3111 | 1.100974 |
-| 1 | walk_bout | 500 | 2012-04-07 00:03:00 | FALSE | FALSE | 47.63253 | -122.3058 | 2.747959 |
-| 1 | walk_bout | 500 | 2012-04-07 00:03:30 | FALSE | FALSE | 47.64607 | -122.2922 | 4.109610 |
-| 1 | walk_bout | 500 | 2012-04-07 00:04:00 | FALSE | FALSE | 47.66240 | -122.2759 | 2.017190 |
-| 1 | walk_bout | 500 | 2012-04-07 00:04:30 | FALSE | FALSE | 47.66996 | -122.2683 | 2.790143 |
-| 1 | walk_bout | 500 | 2012-04-07 00:05:00 | FALSE | FALSE | 47.68312 | -122.2552 | 2.724973 |
+| bout | bout_category | activity_counts | time                | non_wearing | complete_day | latitude | longitude |    speed |
+|-----:|:--------------|----------------:|:--------------------|:------------|:-------------|---------:|----------:|---------:|
+|    1 | walk_bout     |             500 | 2012-04-07 00:02:30 | FALSE       | FALSE        | 47.62716 | -122.3111 | 1.100974 |
+|    1 | walk_bout     |             500 | 2012-04-07 00:03:00 | FALSE       | FALSE        | 47.63253 | -122.3058 | 2.747959 |
+|    1 | walk_bout     |             500 | 2012-04-07 00:03:30 | FALSE       | FALSE        | 47.64607 | -122.2922 | 4.109610 |
+|    1 | walk_bout     |             500 | 2012-04-07 00:04:00 | FALSE       | FALSE        | 47.66240 | -122.2759 | 2.017190 |
+|    1 | walk_bout     |             500 | 2012-04-07 00:04:30 | FALSE       | FALSE        | 47.66996 | -122.2683 | 2.790143 |
+|    1 | walk_bout     |             500 | 2012-04-07 00:05:00 | FALSE       | FALSE        | 47.68312 | -122.2552 | 2.724973 |
 
 ### Summarized walk bout dataset
 
@@ -209,10 +215,10 @@ complete day of data (`complete_day`).
 summary <- summarize_walk_bouts(walk_bouts)
 ```
 
-| bout | median_speed | complete_day | bout_start | duration | bout_category |
-|---:|---:|:---|:---|---:|:---|
-| 1 | 2.769051 | FALSE | 2012-04-07 00:02:30 | 5.0 | walk_bout |
-| 2 | 2.646649 | TRUE | 2012-04-07 00:09:30 | 4304.5 | non_walk_incomplete_gps |
+| bout | median_speed | complete_day | bout_start          | duration | bout_category           |
+|-----:|-------------:|:-------------|:--------------------|---------:|:------------------------|
+|    1 |     2.769051 | FALSE        | 2012-04-07 00:02:30 |      5.0 | walk_bout               |
+|    2 |     2.646649 | TRUE         | 2012-04-07 00:09:30 |   4304.5 | non_walk_incomplete_gps |
 
 This example has 2 bout(s), each with a label. Bout 1 started at
 2012-04-07 00:02:30, lasted 5 minutes, and was categorized as walk_bout.
@@ -230,6 +236,7 @@ Bouts are categorized in precedence order, highest first:
     load.R          checks dependencies and sources R/ into your session
     smoke.R         runs every step on sample data and prints the result
     runtime.txt     R version and CRAN snapshot date, read by repo2docker
+    apt.txt         system libraries (GDAL, GEOS, PROJ, UDUNITS) repo2docker installs
     install.R       packages repo2docker installs at build time
     docker/         an alternative command-line-only image
     Makefile        docker-build, docker-run, smoke, lint, tables, paper, readme
