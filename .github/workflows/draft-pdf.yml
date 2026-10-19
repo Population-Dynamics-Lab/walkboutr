@@ -4,9 +4,7 @@ on:
     paths:
       - analysis/paper.md
       - analysis/refs.bib
-      - analysis/fig2.png
-      - analysis/fig_3.png
-      - analysis/fig_5.png
+      - analysis/paper_files/**
       - .github/workflows/draft-pdf.yml
 
 jobs:
