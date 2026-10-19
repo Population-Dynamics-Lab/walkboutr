@@ -64,13 +64,13 @@ Walking is the most common form of physical activity and a behavior of
 key interest for urban planners, health promotion researchers, and
 rehabilitation medicine practitioners. Data collected from monitoring
 devices, such as Global Positioning System (GPS) trackers and
-accelerometers, hold considerable public health research potential
-[@Feng-2013; @Troped-2008]. By analyzing patterns in individual energy
-expenditure and movement, these data can be used to objectively measure
-walking and its effects, unlocking a researcher's ability to identify
-encouragement for, and barriers to, this key cardioprotective behavior
-across geospatial contexts and populations
-[@Kang-2013; @Jankowska-2015].
+accelerometers, hold considerable public health research potential (Feng
+and Timmermans 2013; Troped et al. 2008). By analyzing patterns in
+individual energy expenditure and movement, these data can be used to
+objectively measure walking and its effects, unlocking a researcher's
+ability to identify encouragement for, and barriers to, this key
+cardioprotective behavior across geospatial contexts and populations
+(Kang et al. 2013; Jankowska et al. 2015).
 
 While GPS devices and accelerometers provide the gold standard
 measurement approach for walking, processing accelerometer and GPS
@@ -82,13 +82,13 @@ Further, it can be challenging to process these data efficiently to
 identify behaviors of interest (e.g. periods of walking). Some methods
 to identify travel using personal monitoring data (e.g. PALMS,and its
 successor HABITUS) (<https://www.habitus.eu>) process data on secure
-servers [@Carlson-2015]; however, researchers whose privacy agreements
-with study participants preclude storing data on 3rd party servers may
-prefer a local R package. To address this gap, we developed a package,
-`walkboutr`, that implements a previously validated algorithm to extract
-patterns in monitoring data consistent with walking [@Kang-2013] that
-may be safely shared across research teams. `walkboutr` allows
-researchers to (1) process raw personal time stamp-linked GPS and
+servers (Carlson et al. 2015); however, researchers whose privacy
+agreements with study participants preclude storing data on 3rd party
+servers may prefer a local R package. To address this gap, we developed
+a package, `walkboutr`, that implements a previously validated algorithm
+to extract patterns in monitoring data consistent with walking (Kang et
+al. 2013) that may be safely shared across research teams. `walkboutr`
+allows researchers to (1) process raw personal time stamp-linked GPS and
 accelerometry data for identifying periods and locations of walking and
 (2) create a deidentified summary of walking behavior that can be used
 in research and practice.
@@ -102,22 +102,23 @@ indicate movement through space (e.g., based on distance traveled). The
 idea of a walk bout derives from the physical activity literature, in
 which monitored time is partitioned into 'activity bouts' and inactive
 time. **A walk bout is a physical activity bout in which both activity
-count range and GPS trace is consistent with walking** [@Kang-2013].
+count range and GPS trace is consistent with walking** (Kang et al.
+2013).
 
 To identify physical activity bouts, the package first classify each
 non-overlapping discrete time window of accelerometry observations, or
-epoch, as *active* or *inactive* following Troiano et al
-[@Troiano-2008]. Next, a physical activity bout is any contiguous set of
-epochs that contains a segment of cumulative active epochs that are
-preceded and followed by segments of consecutive inactive epochs. These
-bouts indicate periods of time in which the wearer appears to be
-physically active, though not necessarily walking (e.g., they could be
-playing a sport or working out).
+epoch, as *active* or *inactive* following Troiano et al (Troiano et al.
+2008). Next, a physical activity bout is any contiguous set of epochs
+that contains a segment of cumulative active epochs that are preceded
+and followed by segments of consecutive inactive epochs. These bouts
+indicate periods of time in which the wearer appears to be physically
+active, though not necessarily walking (e.g., they could be playing a
+sport or working out).
 
 Physical activity bouts are further classified as a *walk bout* or
 *dwell bout* based on GPS traces. A dwell bout is a physical activity
-bout in which an individual did not leave a pre-specified radius
-[@Kang-2013]. A walk bout is physical activity bout that is *not* a
+bout in which an individual did not leave a pre-specified radius (Kang
+et al. 2013). A walk bout is physical activity bout that is *not* a
 dwell bout, has a median speed consistent with that of walking, and has
 sufficient GPS coverage.
 
@@ -161,10 +162,10 @@ bouts, `walkboutr` labels each bout with a numeric value. These bouts
 will later be labeled as either walk bouts or non-walk bouts. In
 addition to finding all bouts in the accelerometry data, `walkboutr`
 identifies non-wearing periods in the accelerometry data when there are
-20 consecutive minutes in which activity counts are 0 CPE
-[@Saelens-2014]. Finally, `walkboutr` flags whether the subject wore
-their accelerometer for a "complete day", or provided at least 8-hours
-of data [@Saelens-2014]. As with other parameters, the package user may
+20 consecutive minutes in which activity counts are 0 CPE (Saelens et
+al. 2014). Finally, `walkboutr` flags whether the subject wore their
+accelerometer for a "complete day", or provided at least 8-hours of data
+(Saelens et al. 2014). As with other parameters, the package user may
 modify the non-threshholds for flagging non-wearing periods and complete
 days.
 
@@ -195,8 +196,8 @@ As shown in Figure 2, bout is classified as a dwell bout (i.e., not
 walking) if the radies of the constructed circle is smaller than a
 prespecified threshhold. If the bout's constructed circle is larger than
 the dwell bout threshhold, that physical activity bout is a walk bout
-[@Kang-2013]. By default, `walkboutr` prespecifies the dwell bout circle
-radius at 66 feet, but this parameter may be changed.
+(Kang et al. 2013). By default, `walkboutr` prespecifies the dwell bout
+circle radius at 66 feet, but this parameter may be changed.
 
 ![**Classifying physical activity bouts as walk bouts or dwell bouts.**
 An individual's physical activity bout is classified as a walk bout
@@ -215,9 +216,9 @@ observation.
 
 The final `walkboutr` output labels each physical activity bout as
 either a walk bout or a non-walk bout, with a specific label for five
-different types of non-walk bouts [@Kang-2013]. Each physical activity
-bout can have just one category, making the order of labeling important.
-In order, `walkboutr` applies the following labels:
+different types of non-walk bouts (Kang et al. 2013). Each physical
+activity bout can have just one category, making the order of labeling
+important. In order, `walkboutr` applies the following labels:
 
 1.  **non_walk_incomplete_gps**: all physical activity bouts without
     complete GPS data,
@@ -246,7 +247,7 @@ The first output is a complete, epoch-level dataset (Table 1) that
 returns all of the original input data that the user provided and the
 new columns `walkboutr` created. This dataset is not de-identified, and
 thus is appropriate for investigators interested in exploring where
-people walk [@Dalmat-2021].
+people walk (Dalmat et al. 2021).
 
 **Table 1. Complete, epoch-level dataset.** The first column contains
 the dataset column names, the second column contains the object class of
@@ -288,8 +289,8 @@ physical activity metrics without any identifying information -- thus
 serving as a product that can be easily shared. This dataset can be used
 in analyses where walking or walking frequency is the outcome,
 e.g. research studies identifying external factors or neighborhood
-features that do or do not increase walking in a population
-[@Mooney-2020].
+features that do or do not increase walking in a population (Mooney et
+al. 2020).
 
 **Table 2. Summary, bout-level dataset.** The first column contains the
 dataset column names, the second column contains the object class of
@@ -353,3 +354,72 @@ well-being in the world of big data.
 
 *Acknowledgements: We thank Amy Youngbloom for her contributions and
 assistance in vetting these methods.*
+
+:::::::::::: {#refs .references .csl-bib-body .hanging-indent}
+::: {#ref-Carlson-2015 .csl-entry}
+Carlson, Jordan A, Marta M Jankowska, Kristin Meseck, et al. 2015.
+"Validity of PALMS GPS Scoring of Active and Passive Travel Compared to
+SenseCam." *Medicine and Science in Sports and Exercise* 47 (3): 662.
+<https://doi.org/10.1249/MSS.0000000000000446>.
+:::
+
+::: {#ref-Dalmat-2021 .csl-entry}
+Dalmat, Ronit R, Stephen J Mooney, Philip M Hurvitz, Chuan Zhou, Anne V
+Moudon, and Brian E Saelens. 2021. "Walkability Measures to Predict the
+Likelihood of Walking in a Place: A Classification and Regression Tree
+Analysis." *Health and Place* 72.
+<https://doi.org/10.1016/j.healthplace.2021.102700>.
+:::
+
+::: {#ref-Feng-2013 .csl-entry}
+Feng, Tao, and Harry JP Timmermans. 2013. "Transportation Mode
+Recognition Using GPS and Accelerometer Data." *Transportation Research
+Part C: Emerging Technologies* 37: 118--30.
+<https://doi.org/10.1016/j.trc.2013.09.014>.
+:::
+
+::: {#ref-Jankowska-2015 .csl-entry}
+Jankowska, Marta M, Jasper Schipperijn, and Jacqueline Kerr. 2015. "A
+Framework for Using GPS Data in Physical Activity and Sedentary Behavior
+Studies." *Exercise and Sport Sciences Reviews* 43 (1): 48.
+<https://doi.org/10.1249/JES.0000000000000035>.
+:::
+
+::: {#ref-Kang-2013 .csl-entry}
+Kang, Bumjoon, Anne V Moudon, Phil M Hurvitz, Lucas Reichley, and Brian
+E Saelens. 2013. "Walking Objectively Measured: Classifying
+Accelerometer Data with GPS and Travel Diaries." *Medicine and Science
+in Sports and Exercise* 45 (7): 1419.
+<https://doi.org/10.1249/MSS.0b013e318285f202>.
+:::
+
+::: {#ref-Mooney-2020 .csl-entry}
+Mooney, Stephen J, Phil M Hurvitz, Anne VeVrnez Moudon, Chuan Zhou,
+Ronit R Dalmat, and Brian E Saelens. 2020. "Residential Neighborhood
+Features Associated with Objectively Measured Walking Near Home:
+Revisiting Walkability Using the Automatic Context Measurement Tool
+(ACMT)." *Health Place* 63. <https://doi.org/10.1016/j.trd.2017.09.026>.
+:::
+
+::: {#ref-Saelens-2014 .csl-entry}
+Saelens, Brian E, Anne V Moudon, Bumjoon Kang, Phil M Hurvitz, and Chuan
+Zhou. 2014. "Relation Between Higher Physical Activity and Public
+Transit Use." *American Journal of Public Health* 104 (5): 854--59.
+<https://doi.org/10.2105/AJPH.2013.301696>.
+:::
+
+::: {#ref-Troiano-2008 .csl-entry}
+Troiano, Richard P, David Berrigan, Kevin W Dodd, Louise C Masse,
+Timothy Tilert, and Margaret McDowell. 2008. "Physical Activity in the
+United States Measured by Accelerometer." *Med Sci Sports Exerc* 40 (1):
+181--88. <https://doi.org/10.1249/mss.0b013e31815a51b3>.
+:::
+
+::: {#ref-Troped-2008 .csl-entry}
+Troped, Philip J, Marcelo S Oliveira, Charles E Matthews, Ellen K
+Cromley, Steven J Melly, and Bruce A Craig. 2008. "Prediction of
+Activity Mode with Global Positioning System and Accelerometer Data."
+*Medicine and Science in Sports and Exercise* 40 (5): 972--78.
+<https://doi.org/10.1249/MSS.0b013e318164c407>.
+:::
+::::::::::::
